@@ -1,3 +1,15 @@
+authors: godofcs, vazy1, MonkeDLyugge
+description: Описание взаимодействий между блоками проекта.
+Parser:
+  description: Программа, собирающая данные с бирж
+  author: godofcs
+Counter:
+  description: Программа, просчитывающая оптимальный ход торговли
+  author: vazy1
+Telegram:
+  description: Бот в Телеграмме, обеспечивающий общение с клиентом
+  author: MonkeDLyugge
+
 schema:
   ParserToCounter:
     description: В каком формате парсер передает информацию файлу подсчета

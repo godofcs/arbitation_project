@@ -5,51 +5,65 @@ from time import sleep
 
 
 def get_name(el):
-    name_el = el.find_element(By.CLASS_NAME, "css-1rhb69f")
-    name = name_el.find_element(By.ID, "C2Cofferlistsell_link_merchant")
+    name = el.find_element(By.CLASS_NAME, "advertiser-name")
+    print(name.text)
     return name.text
 
 
 def get_col_orders(el):
-    col_el = el.find_element(By.CLASS_NAME, "css-o358pi")
-    col = col_el.find_element(By.CLASS_NAME, "css-1a0u4z7")
+    col_el = el.find_element(By.CLASS_NAME, "advertiser-info")
+    col = col_el.find_element(By.CSS_SELECTOR, "span")
+    print(col.text)
     return col.text
 
 
 def get_complete_percent(el):
-    col_el = el.find_element(By.CLASS_NAME, "css-o358pi")
-    col = col_el.find_element(By.CLASS_NAME, "css-19crpgd")
+    col_el = el.find_element(By.CLASS_NAME, "by-popover__el")
+    col = col_el.find_element(By.CSS_SELECTOR, "span")
     col_str = col.text
+    print(col_str)
     return col_str.split("%")[0]
 
 
 def get_price(el):
-    price_el = el.find_element(By.CLASS_NAME, "css-11db165")
-    price = price_el.find_element(By.CLASS_NAME, "css-1m1f8hn")
+    price = el.find_element(By.CLASS_NAME, "price-amount")
+    print(price.text)
     return price.text
 
 
 def get_limit(el):
-    limit_el = el.find_element(By.CLASS_NAME, "css-lalzkr")
-    pochti_limit = limit_el.find_element(By.CLASS_NAME, "css-16w8hmr")
-    limit = pochti_limit.find_elements(By.CLASS_NAME, "css-4cffwv")
+    limit = el.find_elements(By.CLASS_NAME, "ql-value")
     mas_lim = []
-    for el in limit:
-        mas_lim += [el.text]
+    for el in limit[1].text.split("~"):
+        mas_lim += [el]
+    print(mas_lim)
     return mas_lim
 
 
 def get_available(el):
-    price_el = el.find_element(By.CLASS_NAME, "css-lalzkr")
-    pochti_price = price_el.find_element(By.CLASS_NAME, "css-3v2ep2")
-    price = pochti_price.find_element(By.CLASS_NAME, "css-vurnku")
-    return price.text
+    price = el.find_elements(By.CLASS_NAME, "ql-value")
+    print(price[0].text)
+    return price[0].text
 
 
 def get_glass_position(driver):
     pos = []
-    pos_element = driver.find_element(By.XPATH, "//table/tbody/tr")
-    print(pos_element)
+    #table = driver.find_element(By.CLASS_NAME, "trade-list__content")
+    pos_element = driver.find_elements(By.XPATH, "//table/tbody/tr")
+    for element in pos_element[:7]:
+        print(element)
+        try:
+            data = {
+                "name": get_name(element),
+                "col_orders": get_col_orders(element),
+                "complete_percent": get_complete_percent(element),
+                "price": get_price(element),
+                "limit": get_limit(element),
+                "available": get_available(element)
+            }
+            pos += [data]
+        except Exception:
+            pass
     return pos
 
 
@@ -63,7 +77,6 @@ def parse(link):
         try:
             pre_buttons = driver.find_element(By.CLASS_NAME, "by-dialog__head")
             buttons = pre_buttons.find_elements(By.CSS_SELECTOR, "span")
-            print(buttons)
             for button in buttons:
                 button.click()
                 count += 1
@@ -72,15 +85,23 @@ def parse(link):
         except Exception:
             pass
         kol += 1
-        print()
-    print(30)
-    sleep(30)
-    return
+    kol = 0
+    while kol < 30:
+        sleep(1)
+        try:
+            table = driver.find_element(By.CLASS_NAME, "trade-list__content")
+            element = table.find_elements(By.XPATH, "//table/tbody/tr")
+            print(len(element))
+            if len(element) > 7:
+                break
+        except Exception:
+            pass
+        kol += 1
     pos = get_glass_position(driver)
     driver.close()
     return pos
 
 
 if __name__ == "__main__":
-    parse("https://www.bybit.com/fiat/trade/otc/?actionType=0&token=USDT&fiat=RUB&paymentMethod=75")
+    print(parse("https://www.bybit.com/fiat/trade/otc/?actionType=0&token=USDT&fiat=RUB&paymentMethod=75"))
 

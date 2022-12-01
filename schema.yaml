@@ -144,7 +144,6 @@ components:
     items: string
     enum:
       - Tinkoff
-      - Sber
       - RosBank
       - Raffaisen
   Limit:

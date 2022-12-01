@@ -5,8 +5,7 @@ mas_crypto = ["USDT", "BTC", "BUSD", "BNB", "ETH", "SHIB"]
 mas_payment = ["TinkoffNew", "RosBankNew", "RaiffeisenBank"]    # "QIWI", "YandexMoneyNew"
 mas_fiat = ["RUB"]
 mas_sell_buy = ["sell", "buy"]
-mas_market = ["https://p2p.binance.com/ru/trade/",
-              "https://www.bybit.com/fiat/trade/otc/?actionType=0&token=USDT&fiat=RUB&paymentMethod=75"]
+mas_market = ["https://p2p.binance.com/ru/trade/"]
 mas_links = []
 for market in mas_market:
     for sell_buy in mas_sell_buy:

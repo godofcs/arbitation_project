@@ -35,7 +35,7 @@ def get_limit(el):
     limit = pochti_limit.find_elements(By.CLASS_NAME, "css-4cffwv")
     mas_lim = []
     for el in limit:
-        mas_lim += [el.text]
+        mas_lim.append(el.text)
     return mas_lim
 
 

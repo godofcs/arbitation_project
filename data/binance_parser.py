@@ -49,7 +49,8 @@ def get_glass_position(driver):
     pos = []
     element = driver.find_element(By.CLASS_NAME, "css-1mf6m87")
     pos_element = element.find_elements(By.CLASS_NAME, "css-ovjtyv")
-    for element in pos_element[:7]:
+    kol = min(7, len(pos_element))
+    for element in pos_element[:kol]:
         try:
             data = {
                 "name": get_name(element),
@@ -65,18 +66,32 @@ def get_glass_position(driver):
     return pos
 
 
-def parse(link):
+def parse(link, limit):
     driver = Chrome(executable_path="./chromedriver.exe")
     driver.get(link)
     kol = 0
     while kol < 30:
         sleep(1)
         try:
+            input_place = driver.find_element(By.ID, "C2Csearchamount_searchbox_amount")
+            button = driver.find_element(By.ID, "C2Csearchamount_btn_search")
+            button2 = driver.find_element(By.CLASS_NAME, "css-1pcqseb")
+            if input_place and button and button2:
+                button2.click()
+                input_place.click()
+                input_place.send_keys(f"{limit}")
+                button.click()
+                break
+        except Exception:
+            pass
+        kol += 1
+    kol = 0
+    while kol < 30:
+        sleep(1)
+        try:
             element = driver.find_element(By.CLASS_NAME, "css-1mf6m87")
             pos_element = element.find_elements(By.CLASS_NAME, "css-ovjtyv")
-            button = driver.find_element(By.CLASS_NAME, "css-1pcqseb")
-            if button and len(pos_element) > 7:
-                button.click()
+            if len(pos_element) > 7:
                 break
         except Exception:
             pass

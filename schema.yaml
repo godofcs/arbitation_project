@@ -1,0 +1,151 @@
+authors: godofcs, vazy1, MonkeDLyugge
+description: Описание взаимодействий между блоками проекта.
+Parser:
+  description: Программа, собирающая данные с бирж
+  author: godofcs
+Counter:
+  description: Программа, просчитывающая оптимальный ход торговли
+  author: vazy1
+Telegram:
+  description: Бот в Телеграмме, обеспечивающий общение с клиентом
+  author: MonkeDLyugge
+
+schema:
+  ParserToCounter:
+    description: В каком формате парсер передает информацию файлу подсчета
+    Message:
+      AvailableMarkets:
+        $ref: '#/components/AvailableMarkets'
+      Currency:
+        $ref: '#/components/Currency'
+      AvailableBanks:
+        $ref: '#/components/AvailableBanks'
+      ExchangeInMarket:
+        type: object
+        description: Тип обмена в рамках одной биржи
+        required:
+          - ExchangeName
+          - MakerName
+          - InitCoin
+          - ReceiveCoin
+          - Commission
+          - LimitBorder
+        properties:
+          ExchangeName:
+            $ref: '#/components/ExchangeName'
+          MakerName:
+            $ref: '#/components/MakerName'
+          InitCoin:
+            $ref: '#/components/Coin'
+          ReceiveCoin:
+            $ref: '#/components/Coin'
+          Commission:
+            $ref: '#/components/Commission'
+          LimitBorder:
+            type: pair of integers
+            description: Пределы переводов
+            EdjeCase: Если пределы имеют нецелое значение, то округляем к соседней границе
+      ExchangeBeetwenMarkets:
+        type: object
+        description: Перевод между разными биржами
+        required:
+          - NameCoin
+          - InitExchange
+          - ReceiveExchange
+          - Commission
+        properties:
+          NameCoin:
+            $ref: '#/components/Coin/NameCoin'
+          InitExchange:
+            $ref: '#/components/ExchangeName'
+          ReceiveExchange:
+            $ref: '#/components/ExchangeName'
+          Commission:
+            $ref: '#/components/Commission'
+  CounterToTelegram:
+    description: Что передает счётчик телеграмму
+    Message:
+      type: array
+      items:
+      parameters:
+        MessageBetweenMarkets:
+          description: Сообщение о переводе монеты между биржами
+          type: pair of two NameCoin
+          $ref: '#/components/ExchangeName'
+          example: 'Trasfer from Binance to CoinBase'
+        MessageInMarket:
+          description: Сообщение о переводе разных монет на одной бирже
+          required:
+            - ExchangeName
+            - MakeName
+            - InitCoin
+            - ReciveCoin
+          properties:
+            ExchangeName:
+              $ref: '#/components/ExchangeName'
+            MakerName:
+              $ref: '#/components/MakerName'
+            InitCoin:
+              $ref: '#/components/Coin'
+            ReceiveCoin:
+              $ref: '#/components/Coin'
+          example: "Transfer in Binance: Maker Baryga RUB->USDT"
+  TelegramToParser:
+    Message:
+      AvailableMarkets:
+        $ref: '#/components/AvailableMarkets'
+      Currency:
+        $ref: '#/components/Currency'
+      AvailableBanks:
+        $ref: '#/components/AvailableBanks'
+      Limit:
+       $ref: '#/components/Limit'
+
+components:
+  Coin:
+    type: object
+    required:
+      - IsFiat
+      - NameCoin
+    properties:
+      IsFiat:
+        description: Флаг, указывающий фиатная ли монета. Рубль - фиат, биткоин - крипта
+        type: boolean
+      NameCoin:
+        type: string
+        example: 'RUB'
+  ExchangeName:
+    description: Название биржи
+    type: string
+    example: 'Binance'
+  MakerName:
+    description: Название торговца P2P
+    type: string
+    example: 'Baryga'
+  Commission:
+    description: Размер коммиссии, сюда будем включать и максимальный риск после перевода
+    TODO: Понять будем ли мы считать коммиссию в процентах или как обыковенное число
+    type: double
+    min: 0.00
+  AvailableMarkets:
+    type: array
+    items: ExchangeName
+    $ref: '#/components/ExchangeName'
+  Currency:
+    type: string
+    enum:
+      - RUB
+      - USD
+      - EUR
+      - CNY
+      - GBP
+  AvailableBanks:
+    type: array
+    items: string
+    enum:
+      - Tinkoff
+      - RosBank
+      - Raffaisen
+  Limit:
+    type: integer
+    min: 10

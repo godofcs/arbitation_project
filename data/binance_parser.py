@@ -12,20 +12,23 @@ def get_name(el):
 def get_col_orders(el):
     col_el = el.find_element(By.CLASS_NAME, "css-o358pi")
     col = col_el.find_element(By.CLASS_NAME, "css-1a0u4z7")
-    return col.text
+    #print(col.text)
+    return int(col.text.split()[0])
 
 
 def get_complete_percent(el):
     col_el = el.find_element(By.CLASS_NAME, "css-o358pi")
     col = col_el.find_element(By.CLASS_NAME, "css-19crpgd")
     col_str = col.text
-    return col_str.split("%")[0]
+    #print(col_str)
+    return float(col_str.split("%")[0])
 
 
 def get_price(el):
     price_el = el.find_element(By.CLASS_NAME, "css-11db165")
     price = price_el.find_element(By.CLASS_NAME, "css-1m1f8hn")
-    return price.text
+    txt = price.text
+    return float("".join(txt.split(",")))
 
 
 def get_limit(el):
@@ -34,7 +37,10 @@ def get_limit(el):
     limit = pochti_limit.find_elements(By.CLASS_NAME, "css-4cffwv")
     mas_lim = []
     for el in limit:
-        mas_lim.append(el.text)
+        lim = el.text.split("\n")[1]
+        lim = "".join(lim.split(","))
+        #print(lim)
+        mas_lim.append(float(lim))
     return mas_lim
 
 
@@ -42,7 +48,9 @@ def get_available(el):
     price_el = el.find_element(By.CLASS_NAME, "css-lalzkr")
     pochti_price = price_el.find_element(By.CLASS_NAME, "css-3v2ep2")
     price = pochti_price.find_element(By.CLASS_NAME, "css-vurnku")
-    return price.text
+    txt = price.text.split()[0]
+    #print(txt)
+    return float("".join(txt.split(",")))
 
 
 def get_glass_position(driver):
@@ -62,6 +70,7 @@ def get_glass_position(driver):
             }
             pos.append(data)
         except Exception:
+            #print(Exception)
             pass
     return pos
 
@@ -100,3 +109,5 @@ def parse(link, limit):
     driver.close()
     return pos
 
+#if __name__ == "__main__":
+#    print(parse("https://p2p.binance.com/ru/trade/sell/USDT?fiat=RUB&payment=TinkoffNew", 1000))

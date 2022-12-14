@@ -1,4 +1,4 @@
-authors: godofcs, vazy1, MonkeDLyugge
+ authors: godofcs, vazy1, MonkeDLyugge
 description: Описание взаимодействий между блоками проекта.
 Parser:
   description: Программа, собирающая данные с бирж

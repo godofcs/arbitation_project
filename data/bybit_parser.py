@@ -13,36 +13,41 @@ def get_name(el):
 def get_col_orders(el):
     col_el = el.find_element(By.CLASS_NAME, "advertiser-info")
     col = col_el.find_element(By.CSS_SELECTOR, "span")
-    #print(col.text)
-    return col.text
+    #print(int(col.text.split()[0]))
+    return int(col.text.split()[0])
 
 
 def get_complete_percent(el):
     percent = el.find_element(By.CLASS_NAME, "execute-rate")
     percent_str = percent.text
-    #print(percent_str)
-    return percent_str.split("%")[0]
+    #print(float(percent_str.split("%")[0]))
+    return float(percent_str.split("%")[0])
 
 
 def get_price(el):
     price = el.find_element(By.CLASS_NAME, "price-amount")
-    #print(price.text)
-    return price.text
+    txt = price.text
+    #print(1, txt)
+    #print(float("".join(txt.split(","))))
+    return float("".join(txt.split(",")))
 
 
 def get_limit(el):
     limit = el.find_elements(By.CLASS_NAME, "ql-value")
     mas_lim = []
     for el in limit[1].text.split("~"):
-        mas_lim += [el]
+        lim = el.split()[0]
+        lim = "".join(lim.split(","))
+        mas_lim += [float(lim)]
     #print(mas_lim)
     return mas_lim
 
 
 def get_available(el):
     price = el.find_elements(By.CLASS_NAME, "ql-value")
-    #print(price[0].text)
-    return price[0].text
+    txt = price[0].text.split()[0]
+    #print("".join(txt.split(",")))
+    return float("".join(txt.split(",")))
 
 
 def get_glass_position(driver):
@@ -63,7 +68,7 @@ def get_glass_position(driver):
             }
             pos += [data]
         except Exception:
-
+            print(Exception)
             pass
     return pos
 
@@ -87,11 +92,32 @@ def parse(link, limit):
             pass
         kol += 1
     # Это на всякий случай
-    pre_buttons = driver.find_element(By.CLASS_NAME, "by-dialog__head")
-    buttons = pre_buttons.find_elements(By.CSS_SELECTOR, "span")
-    for button in buttons:
-        button.click()
+    kol = 0
+    driver.maximize_window()
+    while kol < 30:
+        sleep(1)
+        try:
+            pre_buttons = driver.find_element(By.CLASS_NAME, "otc-ad-close")
+            buttons = pre_buttons.find_elements(By.CSS_SELECTOR, "i")
+            for button in buttons:
+                button.click()
+            break
+        except Exception:
+            pass
+        kol += 1
+    kol = 0
+    while kol < 5:
+        sleep(1)
+        try:
+            button = driver.find_element(By.CLASS_NAME, "by-dialog__close")
+            button.click()
+            print("cool")
+            break
+        except Exception:
+            pass
+        kol += 1
     # До сюда
+    driver.set_window_size(1000, 800)
     kol = 0
     while kol < 30:
         sleep(1)

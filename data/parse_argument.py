@@ -110,10 +110,14 @@ def add_to_database(new_offer, limit_id, taker_commission, maker_commission):
     sessions.commit()
     sessions.close()
 
+def checking_the_relevance_of_information():
+    pass
+
 
 def parse_argument(limit_id, fiat_mas, market_mas, crypto_mas, payment_mas):
     limit = get_limit(limit_id)
     mas_links = make_mas_links(fiat_mas, market_mas, crypto_mas, payment_mas)
+
     for link in mas_links[:4]:
         if "binance" in link[0]:
             glass = binance_parse(link[0], limit)

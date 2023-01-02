@@ -1,9 +1,8 @@
-from data.binance_parser import parse as binance_parse
-from data.bybit_parser import parse as bybit_parse
-from data.analyse import analyse_glass
+from src.parsers.binance_parser import parse as binance_parse
+from src.parsers.bybit_parser import parse as bybit_parse
+from src.analyse import analyse_glass
 import datetime
-from data import db_session, offers
-from pyvirtualdisplay import Display
+from src.db_requests import db_session, offers
 
 db_session.global_init("C:/Users/4739409/PycharmProjects/arbitation_project/bd/base.sqlite")
 

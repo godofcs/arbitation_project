@@ -84,9 +84,9 @@ def parse(link, limit):
         try:
             input_place = driver.find_element(By.ID, "C2Csearchamount_searchbox_amount")
             button = driver.find_element(By.ID, "C2Csearchamount_btn_search")
-            button2 = driver.find_element(By.CLASS_NAME, "css-1pcqseb")
-            if input_place and button and button2:
-                button2.click()
+            #button2 = driver.find_element(By.CLASS_NAME, "css-1pcqseb")
+            if input_place and button:  # and button2:
+                #button2.click()
                 input_place.click()
                 input_place.send_keys(f"{limit}")
                 button.click()

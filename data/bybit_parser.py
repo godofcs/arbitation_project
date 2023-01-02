@@ -94,7 +94,7 @@ def parse(link, limit):
     # Это на всякий случай
     kol = 0
     driver.maximize_window()
-    while kol < 30:
+    while kol < 2:
         sleep(1)
         try:
             pre_buttons = driver.find_element(By.CLASS_NAME, "otc-ad-close")
@@ -109,7 +109,7 @@ def parse(link, limit):
     while kol < 5:
         sleep(1)
         try:
-            button = driver.find_element(By.CLASS_NAME, "by-dialog__close")
+            button = driver.find_element(By.CLASS_NAME, "by-dialog__btn")
             button.click()
             print("cool")
             break
@@ -122,7 +122,7 @@ def parse(link, limit):
     while kol < 30:
         sleep(1)
         try:
-            input_place = driver.find_element(By.CLASS_NAME, "by-input__inner")
+            input_place = driver.find_elements(By.CLASS_NAME, "by-input__inner")[1]
             if input_place:
                 input_place.click()
                 input_place.send_keys(f"{limit}")
@@ -147,6 +147,6 @@ def parse(link, limit):
 
 
 #if __name__ == "__main__":
-#    print(parse("https://www.bybit.com/fiat/trade/otc/?actionType=1&token=BTC&fiat=RUB&paymentMethod=64", 10000))
+#    print(parse("https://www.bybit.com/fiat/trade/otc/?actionType=0&token=BTC&fiat=RUB&paymentMethod=64", 10000))
 
 

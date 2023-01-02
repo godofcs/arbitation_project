@@ -1,5 +1,5 @@
-from data import parse_argument as pa
-from data import counter
+from src.parsers import parse_argument as pa
+from src import counter
 
 
 if __name__ == "__main__":

@@ -1,10 +1,10 @@
-from data.binance_parser import parse as binance_parse
-from data.bybit_parser import parse as bybit_parse
-from data.analyse import analyse_glass
-from data.huobi_parser import parse as huobi_parse
+from src.parsers.binance_parser import parse as binance_parse
+from src.parsers.bybit_parser import parse as bybit_parse
+from src.analyse import analyse_glass
+from src.parsers.huobi_parser import parse as huobi_parse
 import datetime
-from data import db_session
-from data.offers import Offer
+from src.db_requests import db_session
+from src.db_requests.offers import Offer
 from pyvirtualdisplay import Display
 
 db_session.global_init("C:/Users/4739409/PycharmProjects/arbitation_project/bd/base.sqlite")

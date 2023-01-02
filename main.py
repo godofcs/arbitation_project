@@ -1,9 +1,8 @@
-from data.binance_parser import parse as binance_parse
-from data.bybit_parser import parse as bybit_parse
+from data.parsers.binance_parser import parse as binance_parse
+from data.parsers.bybit_parser import parse as bybit_parse
 from data.analyse import analyse_glass
 import datetime
-from data import db_session, offers
-from pyvirtualdisplay import Display
+from data.db_requests import db_session, offers
 
 db_session.global_init("C:/Users/4739409/PycharmProjects/arbitation_project/bd/base.sqlite")
 
@@ -95,9 +94,9 @@ if __name__ == "__main__":
             new_offer = [analyse_glass(glass)] + link[1] + [datetime.datetime.now()]
             sessions = db_session.create_session()
             offer = sessions.query(offers.Offer).filter(offers.Offer.market == new_offer[1],
-                                                       offers.Offer.init_coin == new_offer[2],
-                                                       offers.Offer.receive_coin == new_offer[3],
-                                                       offers.Offer.id_limit == limit_id).first()
+                                                        offers.Offer.init_coin == new_offer[2],
+                                                        offers.Offer.receive_coin == new_offer[3],
+                                                        offers.Offer.id_limit == limit_id).first()
             if offer is None:
                 offer = offers.Offer()
                 offer.market = new_offer[1]

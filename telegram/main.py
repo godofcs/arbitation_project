@@ -7,12 +7,13 @@ ALL_MARKETS = ['Binance', 'ByBit', 'Okx', 'Huobi']
 ALL_CURRENCY = ['RUB', 'USD', 'EUR', 'CNY', 'GBP']
 ALL_BANKS = ['Raiffaizen', 'Sber', 'Tinkoff']
 
-START_OVER_BUTTON = "Start Over"
-START_BUTTON = "Start Trading"
-HELP_BUTTON = "Help"
+START_OVER_BUTTON = "НАЧАТЬ СНАЧАЛА"
+START_BUTTON = "НАЧАТЬ ТРЕЙДИТЬ"
+HELP_BUTTON = "ПОМОЩЬ"
+INVALID_STRING = "Я тебя не понимаю :-("
 
-RETURN = "fuckingshitbitchsukableat"
-DONE = "Done"
+RETURN = "Вернуться назад"
+DONE = "Выполнено"
 
 LEFT_BORDER = 1000
 RIGHT_BORDER = 100000
@@ -37,7 +38,7 @@ def user_clear():
 
 
 def help(message):
-    helping_message = "Message for help"
+    helping_message = "Привет! Для начала взаимодействия с нашим ботом ты должен выбрать валюту(пока доступны операции только с рублем), банки и биржи, на которых ты будешь торговать. Запомни: чем больше выбранных банков и бирж, тем больше выгодных вариантов. Бот примерно будет работать 15-30 минут, пока завари себе кофе и подготовь печенюшки, скоро мы будем делать бабки! Если что-то сломалось или тебе что-то не понятно, то пиши @vazy1 за помощью. version 0.1.1"
     markup = types.ReplyKeyboardMarkup()
     button = types.KeyboardButton(START_BUTTON)
     markup.add(button)
@@ -47,7 +48,7 @@ def help(message):
 
 @bot.message_handler(commands=['start'])
 def start(message):
-    mess = 'Привет, Я бот созданный помогать....'
+    mess = 'Привет. Я бот, созданный для того, чтобы преумножить твой капитал с помощью сделок на криптовалютных биржах! Важно понимать, что за одну сделку ты не заработаешь на новый майбах, даже можешь и потерять свои деньги, но на дистанции ты точно заработаешь кругленькую сумму! Если тебе что-то не понятно, смело жми/пиши "Help". Желаю удачи!'
     markup = types.ReplyKeyboardMarkup()
     buttons = list(map(lambda el: types.KeyboardButton(el),
                        [HELP_BUTTON, START_BUTTON]))
@@ -62,14 +63,14 @@ def currency(message):
         help(message)
         return
     elif message.text.strip() != START_BUTTON:
-        bot.send_message(message.chat.id, "I can't understand you shorty)")
+        bot.send_message(message.chat.id, INVALID_STRING)
         start(message)
         return
     markup = types.ReplyKeyboardMarkup()
     buttons = list(map(lambda el: types.KeyboardButton(el),
                        [HELP_BUTTON, START_OVER_BUTTON] + ALL_CURRENCY))
     markup.add(*buttons)
-    mess = 'Choose the currency you will trade'
+    mess = 'Выбери валюту для торговли'
     bot.send_message(message.chat.id, mess, reply_markup=markup)
     bot.register_next_step_handler(message, limit)
 
@@ -90,7 +91,7 @@ def limit(message):
     else:
         message.text = START_BUTTON
         user_clear()
-        bot.send_message(message.chat.id, "I can't understand you shorty)")
+        bot.send_message(message.chat.id, INVALID_STRING)
         currency(message)
         return
 
@@ -98,7 +99,8 @@ def limit(message):
     buttons = list(map(lambda el: types.KeyboardButton(el),
                        [HELP_BUTTON, START_OVER_BUTTON]))
     markup.add(*buttons)
-    mess = 'Enter the limit (1000 RUB min)'
+    mess = 'Введи свою ставку (1000 RUB минимум)' # TO DO Если будем делать для многих валют, то тут надо
+    # TO DO параметризовть лимит для разных валют
     bot.send_message(message.chat.id, mess, reply_markup=markup)
     bot.register_next_step_handler(message, stock_markets)
 
@@ -127,13 +129,13 @@ def stock_markets(message):
         try:
             int_limit = int(message.text)
         except ValueError:
-            bot.send_message(message.chat.id, "Please enter the limit which is number, not word")
+            bot.send_message(message.chat.id, "Введи число, а не цифру")
             message.text = user_currency
             limit(message)
             return
 
         if not (LEFT_BORDER <= int_limit <= RIGHT_BORDER):
-            bot.send_message(message.chat.id, f"Please enter the limit on borders: min = {LEFT_BORDER}, "
+            bot.send_message(message.chat.id, f"Пожалуйста, введите ограничение на границы: min = {LEFT_BORDER}, "
                                               f"max = {RIGHT_BORDER}")
             message.text = user_currency
             limit(message)
@@ -145,7 +147,7 @@ def stock_markets(message):
     buttons = list(map(lambda el: stock_markets_buttons(el),
                        [START_OVER_BUTTON, HELP_BUTTON] + ALL_MARKETS + [DONE]))
     markup.add(*buttons)
-    mess = 'Except/Add stock markets you want to trade in'
+    mess = 'Выбери биржи на которых хочешь торговать!'
     bot.send_message(message.chat.id, mess, reply_markup=markup)
     bot.register_next_step_handler(message, pre_stock_markets)
 
@@ -166,13 +168,13 @@ def pre_stock_markets(message):
     else:
         global user_stock_markets
         if message.text[2:].strip() in ALL_MARKETS:
-            bot.send_message(message.chat.id, f"Removed {message.text.strip()[2:]} stock market")
+            bot.send_message(message.chat.id, f"Удалить {message.text.strip()[2:]} биржу")
             user_stock_markets.remove(message.text.strip()[2:])
         elif message.text.strip() in ALL_MARKETS:
-            bot.send_message(message.chat.id, f"Added {message.text.strip()} stock market")
+            bot.send_message(message.chat.id, f"Добавить {message.text.strip()} биржу")
             user_stock_markets.append(message.text.strip())
         else:
-            bot.send_message(message.chat.id, "I can't understand you shorty)")
+            bot.send_message(message.chat.id, INVALID_STRING)
         message.text = RETURN
         stock_markets(message)
 
@@ -189,7 +191,7 @@ def bank(message):
     buttons = list(map(lambda el: bank_button(el),
                        [START_OVER_BUTTON, HELP_BUTTON] + ALL_BANKS + [DONE]))
     markup.add(*buttons)
-    mess = 'Where do you hold your paper'
+    mess = 'Где вы держите свои деньги?'
     bot.send_message(message.chat.id, mess, reply_markup=markup)
     bot.register_next_step_handler(message, pre_bank)
 
@@ -211,13 +213,13 @@ def pre_bank(message):
     else:
         global user_bank
         if message.text[2:].strip() in ALL_BANKS:
-            bot.send_message(message.chat.id, f"Removed {message.text[2:].strip()} bank")
+            bot.send_message(message.chat.id, f"Удалить {message.text[2:].strip()} банк")
             user_bank.remove(message.text[2:])
         elif message.text.strip() in ALL_BANKS:
-            bot.send_message(message.chat.id, f"Added {message.text} bank")
+            bot.send_message(message.chat.id, f"Добавить {message.text} банк")
             user_bank.append(message.text)
         else:
-            bot.send_message(message.chat.id, "I can't understand you shorty)")
+            bot.send_message(message.chat.id, INVALID_STRING)
         message.text = RETURN
         bank(message)
 
@@ -234,10 +236,10 @@ def answer(message):
         help(message)
         return
     elif message.text.strip() == DONE:
-        bot.send_message(message.chat.id, "We are working...")
+        bot.send_message(message.chat.id, "Работа  в процессе...")
         print(user_bank, user_limit, user_currency, user_stock_markets)
     else:
-        bot.send_message(message.chat.id, "I can't understand you shorty)")
+        bot.send_message(message.chat.id, INVALID_STRING)
         bank(message)
         return
 

@@ -110,7 +110,9 @@ def add_to_database(new_offer, limit_id, taker_commission, maker_commission):
     sessions.commit()
     sessions.close()
 
+
 def checking_the_relevance_of_information():
+
     pass
 
 

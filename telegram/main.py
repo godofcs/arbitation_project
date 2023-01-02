@@ -18,8 +18,8 @@ LEFT_BORDER = 1000
 RIGHT_BORDER = 100000
 
 user_currency = ''
-user_bank = ''
-user_stock_markets = ['Binance', 'ByBit', 'Okx', 'Huobi']
+user_bank = ALL_BANKS.copy()
+user_stock_markets = ALL_MARKETS.copy()
 user_limit = 0
 
 bot = telebot.TeleBot(API_KEY)
@@ -31,9 +31,9 @@ def user_clear():
     global user_currency
     user_currency = ''
     global user_bank
-    user_bank = ''
+    user_bank = ALL_BANKS.copy()
     global user_stock_markets
-    user_stock_markets = ['Binance', 'ByBit', 'Okx', 'Huobi']
+    user_stock_markets = ALL_MARKETS.copy()
 
 
 def help(message):
@@ -104,6 +104,7 @@ def limit(message):
 
 
 def stock_markets_buttons(el):
+    global user_stock_markets
     if el in user_stock_markets:
         el = "✅ " + el
     return types.KeyboardButton(el)
@@ -165,32 +166,37 @@ def pre_stock_markets(message):
     else:
         global user_stock_markets
         if message.text[2:].strip() in ALL_MARKETS:
-            bot.send_message(message.chat.id, f"Removed {message.text[2:].strip()} stock market")
-            user_stock_markets.remove(message.text[2:])
+            bot.send_message(message.chat.id, f"Removed {message.text.strip()[2:]} stock market")
+            user_stock_markets.remove(message.text.strip()[2:])
         elif message.text.strip() in ALL_MARKETS:
-            bot.send_message(message.chat.id, f"Add {message.text} stock market")
-            user_stock_markets.append(message.text)
+            bot.send_message(message.chat.id, f"Added {message.text.strip()} stock market")
+            user_stock_markets.append(message.text.strip())
         else:
             bot.send_message(message.chat.id, "I can't understand you shorty)")
         message.text = RETURN
         stock_markets(message)
 
 
+def bank_button(el):
+    global user_bank
+    if el in user_bank:
+        el = "✅ " + el
+    return types.KeyboardButton(el)
+
+
 def bank(message):
     markup = types.ReplyKeyboardMarkup()
-    buttons = list(map(lambda el: types.KeyboardButton(el),
-                       [START_OVER_BUTTON, HELP_BUTTON] + ALL_BANKS))
+    buttons = list(map(lambda el: bank_button(el),
+                       [START_OVER_BUTTON, HELP_BUTTON] + ALL_BANKS + [DONE]))
     markup.add(*buttons)
     mess = 'Where do you hold your paper'
     bot.send_message(message.chat.id, mess, reply_markup=markup)
-    bot.register_next_step_handler(message, answer)
+    bot.register_next_step_handler(message, pre_bank)
 
 
-def answer(message):
-    global user_bank
-    if message.text.strip() in ALL_BANKS:
-        user_bank = message.text.strip()
-    elif message.text.strip() == START_OVER_BUTTON:
+def pre_bank(message):
+    print(message.text.strip() == DONE)
+    if message.text.strip() == START_OVER_BUTTON:
         user_clear()
         message.text = START_BUTTON
         currency(message)
@@ -199,15 +205,41 @@ def answer(message):
         user_clear()
         help(message)
         return
+    elif message.text.strip() == DONE:
+        answer(message)
+        return
+    else:
+        global user_bank
+        if message.text[2:].strip() in ALL_BANKS:
+            bot.send_message(message.chat.id, f"Removed {message.text[2:].strip()} bank")
+            user_bank.remove(message.text[2:])
+        elif message.text.strip() in ALL_BANKS:
+            bot.send_message(message.chat.id, f"Added {message.text} bank")
+            user_bank.append(message.text)
+        else:
+            bot.send_message(message.chat.id, "I can't understand you shorty)")
+        message.text = RETURN
+        bank(message)
+
+
+def answer(message):
+    global user_bank
+    if message.text.strip() == START_OVER_BUTTON:
+        user_clear()
+        message.text = START_BUTTON
+        currency(message)
+        return
+    elif message.text.strip() == HELP_BUTTON:
+        user_clear()
+        help(message)
+        return
+    elif message.text.strip() == DONE:
+        bot.send_message(message.chat.id, "We are working...")
+        print(user_bank, user_limit, user_currency, user_stock_markets)
     else:
         bot.send_message(message.chat.id, "I can't understand you shorty)")
         bank(message)
         return
-
-    bot.send_message(message.chat.id, "We are working...")
-
-    print(user_bank, user_limit, user_currency, user_stock_markets)
-
 
 
 bot.polling(none_stop=True)

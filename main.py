@@ -1,10 +1,5 @@
-from data.binance_parser import parse as binance_parse
-from data.bybit_parser import parse as bybit_parse
-from data.analyse import analyse_glass
-import datetime
-from data import parse_argument as pa
-from data import counter
-from pyvirtualdisplay import Display
+from src.parsers import parse_argument as pa
+from src import counter
 
 
 if __name__ == "__main__":

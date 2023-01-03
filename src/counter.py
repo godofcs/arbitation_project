@@ -5,8 +5,8 @@ INF = 100000000
 _fiat = {"RUB", "USD", "EUR", "CNY", "GBP"}
 _crypto = {"USDT": 1, "BTC": 2, "BUSD": 3, "BNB": 4, "ETH": 5, "SHIB": 6}
 _deC = {1: "USDT", 2: "BTC", 3: "BUSD", 4: "BNB", 5: "ETH", 6: "SHIB"}
-_market = {"binance": 1, "bybit": 2, "okx": 3}
-_deM = {1: "binance", 2: "bybit", 3: "okx"}
+_market = {"binance": 1, "bybit": 2, "huobi": 3}
+_deM = {1: "binance", 2: "bybit", 3: "huobi"}
 
 
 def PosByCoin(coin):
@@ -33,7 +33,7 @@ def Counter(data: list):
     fiat = []
     crypto = []
     for coins in data:
-        if coins.recive_name.upper() in _fiat:
+        if coins.receive_name.upper() in _fiat:
             fiat.append(coins)
         else:
             crypto.append(coins)
@@ -47,7 +47,7 @@ def Counter(data: list):
         gr[pos_of_root].append([pos_of_node, PriceByCoin(toCrypto), is_maker])
     for toFiat in fiat:
         pos_of_node = PosByCoin(toFiat)
-        is_maker = toCrypto.maker_commision != 1
+        is_maker = toFiat.taker_commision != 1  # было maker_comission
         gr[pos_of_node].append([N - 1, PriceByCoin(toFiat), is_maker])
     d = [INF for i in range(N)]
     p = [-1 for i in range(N)]
@@ -76,7 +76,7 @@ def Counter(data: list):
         else:
             ans.append("TAKER")
         ans.append("|")
-    ans = ["RUB"]
+    ans.append("RUB")
     # return ans
     for i in ans:
         print(i, end=" ")

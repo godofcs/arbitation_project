@@ -123,7 +123,7 @@ def add_to_database(new_offer, limit_id, taker_commission, maker_commission):
 
 def actual_date(last_date):
     now = datetime.datetime.now()
-    return (now - last_date).seconds < 3600
+    return (now - last_date).seconds < 10000072000  # 1800
 
 
 def checking_the_relevance_of_information(mas_links, limit_id):
@@ -156,7 +156,10 @@ def parse_argument(limit_id, fiat_mas, market_mas, crypto_mas, payment_mas):
             glass = binance_parse(link[0], limit)
             new_offer = [analyse_glass(glass)] + link[1] + [datetime.datetime.now()]
             print("binance", new_offer)
-            add_to_database(new_offer, limit_id, 0.0, 0.1)
+            if new_offer[5] == "buy":
+                add_to_database(new_offer, limit_id, 0.0, 1)
+            else:
+                add_to_database(new_offer, limit_id, 1, 0.1)
         elif "bybit" in link[0]:
             glass = bybit_parse(link[0], limit)
             new_offer = [analyse_glass(glass)] + link[1] + [datetime.datetime.now()]
@@ -164,7 +167,6 @@ def parse_argument(limit_id, fiat_mas, market_mas, crypto_mas, payment_mas):
             add_to_database(new_offer, limit_id, 0.0, 0.0)
         elif "huobi" in link[0]:
             glass = huobi_parse(link[0], limit, all_payment[link[1][3]]["huobi"])
-            print(link[1][3])
             new_offer = [analyse_glass(glass)] + link[1] + [datetime.datetime.now()]
             print("huobi", new_offer)
             add_to_database(new_offer, limit_id, 0.0, 0.0)
@@ -172,6 +174,7 @@ def parse_argument(limit_id, fiat_mas, market_mas, crypto_mas, payment_mas):
     offers = sessions.query(Offer)
     ans = []
     for offer in offers:
-        ans += [[offer.market, offer.init_coin, offer.receive_coin, offer.id_limit, offer.price, offer.maker_commission,
-              offer.taker_commission, offer.last_time_update]]
+        ans.append(offer)
+        #ans += [[offer.market, offer.init_coin, offer.receive_coin, offer.id_limit, offer.price, offer.maker_commission,
+        #         offer.taker_commission, offer.last_time_update]]
     return ans

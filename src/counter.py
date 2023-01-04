@@ -64,12 +64,12 @@ def Counter(data: list):
 
     dfs(0)
     ans = str()
-    pos = N - 1 # или ноль?
+    pos = N - 1  # или ноль?
     while pos != -1:
         cur_offer = prev[pos]
         # TODO Добавить справку о обозначениях в Хелп
         ans += "Sell" if cur_offer.sell_buy else "Buy"  # если у тебя тру == бай, то поменяй сам пж
         ans += "Taker" if cur_offer.maker_commission == 100 else "Maker"
         ans += cur_offer.market + cur_offer.init_coin + cur_offer.recieve_coin + " -> "
-        pos = PosByCoin(cur_offer, "receive") # тут еще подумать надо
+        pos = PosByCoin(cur_offer, "receive")  # тут еще подумать надо
     return ans

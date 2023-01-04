@@ -1,14 +1,11 @@
 from src.db_requests.offers import Offer
 
 N = 201
-BIT_TO_RUB = 2023536.96
 INF = 100000000
 
 _fiat = {"RUB", "USD", "EUR", "CNY", "GBP"}
 _crypto = {"USDT": 1, "BTC": 2, "BUSD": 3, "BNB": 4, "ETH": 5, "SHIB": 6}
-_deC = {1: "USDT", 2: "BTC", 3: "BUSD", 4: "BNB", 5: "ETH", 6: "SHIB"}
 _market = {"binance": 1, "bybit": 2, "huobi": 3}
-_deM = {1: "binance", 2: "bybit", 3: "huobi"}
 
 
 def PosByCoin(coin: Offer, type_of_coin: str):
@@ -18,21 +15,10 @@ def PosByCoin(coin: Offer, type_of_coin: str):
     return _crypto[coin_name] * 10 + _market[coin.market]
 
 
-def Exchange(coin):
-    if coin.recive_name.upper() in _fiat:
-        return 1
-    return coin.price * BIT_TO_RUB
-
-
 def Commission(coin):
     # TODO
     return 0
 
-
-def PriceByCoin(coin):
-    return max(coin.price * ((100 - coin.taker_commission) / 100),
-               coin.price * ((100 - coin.maker_commission) / 100)) * Exchange \
-               (coin) - Commission(coin)
 
 
 def Counter(data: list):
@@ -64,12 +50,12 @@ def Counter(data: list):
 
     dfs(0)
     ans = str()
-    pos = N - 1  # или ноль?
+    pos = N - 1
     while pos != -1:
         cur_offer = prev[pos]
         # TODO Добавить справку о обозначениях в Хелп
         ans += "Buy" if cur_offer.sell_buy else "Sell"
         ans += "Taker" if cur_offer.maker_commission == 100 else "Maker"
         ans += cur_offer.market + cur_offer.init_coin + cur_offer.recieve_coin + " -> "
-        pos = PosByCoin(cur_offer, "receive")  # тут еще подумать надо
+        pos = PosByCoin(cur_offer, "receive")
     return ans

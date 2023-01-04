@@ -10,13 +10,13 @@ _deM = {1: "binance", 2: "bybit", 3: "huobi"}
 
 
 def PosByCoin(coin):
-    return _crypto[coin.recive_coin] * 10 + _market[coin.market]
+    return _crypto[coin.receive_coin] * 10 + _market[coin.market]
 
 
 def exchange(coin):
-    if coin.recive_name.upper() in _fiat:
+    if coin.receive_coin.upper() in _fiat:
         return 1
-    return coin.price * BIT_TO_RUB
+    return float(coin.price) * BIT_TO_RUB
 
 
 def commission(coin):
@@ -25,7 +25,7 @@ def commission(coin):
 
 
 def PriceByCoin(coin):
-    return max(coin.price * (1 - coin.taker_commission), coin.price * (1 - coin.maker_commission)) * exchange \
+    return max(float(coin.price) * (1 - coin.taker_commission), float(coin.price) * (1 - coin.maker_commission)) * exchange \
         (coin) - commission(coin)
 
 
@@ -33,17 +33,19 @@ def Counter(data: list):
     fiat = []
     crypto = []
     for coins in data:
-        if coins.receive_name.upper() in _fiat:
+        if coins.receive_coin.upper() in _fiat:
+            print(1, coins.receive_coin, coins.init_coin)
             fiat.append(coins)
         else:
+            print(2, coins.receive_coin, coins.init_coin)
             crypto.append(coins)
     gr = [[] for i in range(N)]
     for toCrypto in crypto:
         pos_of_node = PosByCoin(toCrypto)
         pos_of_root = 0
-        if not toCrypto.init_name.upper() in _fiat:
-            pos_of_root = _crypto[toCrypto.recive_coin] * 10 + _market[toCrypto.market]
-        is_maker = toCrypto.maker_commision != 1
+        if not toCrypto.init_coin.upper() in _fiat:
+            pos_of_root = _crypto[toCrypto.receive_coin] * 10 + _market[toCrypto.market]
+        is_maker = toCrypto.maker_commission != 1
         gr[pos_of_root].append([pos_of_node, PriceByCoin(toCrypto), is_maker])
     for toFiat in fiat:
         pos_of_node = PosByCoin(toFiat)

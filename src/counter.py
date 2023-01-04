@@ -20,7 +20,6 @@ def Commission(coin):
     return 0
 
 
-
 def Counter(data: list):
     """
     Поиск релазиован с помощью алгоритма поиска наибольшего пути

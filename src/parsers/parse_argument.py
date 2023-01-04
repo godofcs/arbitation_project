@@ -123,7 +123,7 @@ def add_to_database(new_offer, limit_id, taker_commission, maker_commission):
 
 def actual_date(last_date):
     now = datetime.datetime.now()
-    return (now - last_date).seconds < 1800  # 1800
+    return (now - last_date).seconds < 100000001800  # 1800
 
 
 def checking_the_relevance_of_information(mas_links, limit_id):
@@ -170,6 +170,7 @@ def parse_argument(limit_id, fiat_mas, market_mas, crypto_mas, payment_mas):
             new_offer = [analyse_glass(glass)] + link[1] + [datetime.datetime.now()]
             print("huobi", new_offer)
             add_to_database(new_offer, limit_id, 0.0, 0.0)
+    # TODO сделать нормальный выбор по параметрам запросу
     sessions = db_session.create_session()
     offers = sessions.query(Offer)
     ans = []

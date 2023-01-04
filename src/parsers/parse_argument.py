@@ -123,7 +123,7 @@ def add_to_database(new_offer, limit_id, taker_commission, maker_commission):
 
 def actual_date(last_date):
     now = datetime.datetime.now()
-    return (now - last_date).seconds < 10000072000  # 1800
+    return (now - last_date).seconds < 1800  # 1800
 
 
 def checking_the_relevance_of_information(mas_links, limit_id):
@@ -157,9 +157,9 @@ def parse_argument(limit_id, fiat_mas, market_mas, crypto_mas, payment_mas):
             new_offer = [analyse_glass(glass)] + link[1] + [datetime.datetime.now()]
             print("binance", new_offer)
             if new_offer[5] == "buy":
-                add_to_database(new_offer, limit_id, 0.0, 1)
+                add_to_database(new_offer, limit_id, 0.0, 100)
             else:
-                add_to_database(new_offer, limit_id, 1, 0.1)
+                add_to_database(new_offer, limit_id, 100, 0.1)
         elif "bybit" in link[0]:
             glass = bybit_parse(link[0], limit)
             new_offer = [analyse_glass(glass)] + link[1] + [datetime.datetime.now()]

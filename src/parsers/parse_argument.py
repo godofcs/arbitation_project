@@ -171,11 +171,4 @@ def parse_argument(limit_id, fiat_mas, market_mas, crypto_mas, payment_mas):
             print("huobi", new_offer)
             add_to_database(new_offer, limit_id, 0.0, 0.0)
     # TODO сделать нормальный выбор по параметрам запросу
-    sessions = db_session.create_session()
-    offers = sessions.query(Offer)
-    ans = []
-    for offer in offers:
-        ans.append(offer)
-        #ans += [[offer.market, offer.init_coin, offer.receive_coin, offer.id_limit, offer.price, offer.maker_commission,
-        #         offer.taker_commission, offer.last_time_update]]
-    return ans
+

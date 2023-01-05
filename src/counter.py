@@ -73,8 +73,8 @@ def Counter(data: list):
     def dfs(v: int, p: int):
         for u in gr[v]:
             pos = PosByCoin(u, "init")
-            if dp[v] + u.price > dp[pos]:
-                dp[pos] = dp[v] + u.price
+            if dp[v] + float(u.price) > dp[pos]:
+                dp[pos] = dp[v] + float(u.price)
                 prev[pos] = u
             if p // 10 != v // 10:
                 dfs(pos, v)

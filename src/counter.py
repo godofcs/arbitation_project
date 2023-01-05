@@ -59,10 +59,10 @@ def Counter(data: list):
                 offer_between_markets = data[0]
                 offer_between_markets.init_coin = _deC[i]
                 offer_between_markets.receive_coin = _deC[i]
-                offer_between_markets.market = _deM[j]
+                offer_between_markets.market = _deM[k]
                 offer_between_markets.price = -Commission(_deC[i])
                 gr[i * 10 + j].append(offer_between_markets)
-                offer_between_markets.market = _deM[k]
+                offer_between_markets.market = _deM[j]
                 gr[i * 10 + k].append(offer_between_markets)
                 # здесь в поле маркет указано, куда мы переводим монеты
     prev = [data[0] for i in range(N)]

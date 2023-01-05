@@ -54,13 +54,13 @@ def Counter(data: list):
             gr[PosByCoin(offer, "receive")].append(offer)
         # TODO Вот тут можно прикрутить лог, если пришла непонятная моментка
     for i in range(1, 7):
-        for j in range(1, 4):
-            for k in range(j):
+        for j in range(2, 4):
+            for k in range(1, j):
                 offer_between_markets = data[0]
                 offer_between_markets.init_coin = _deC[i]
                 offer_between_markets.receive_coin = _deC[i]
                 offer_between_markets.market = _deM[j]
-                offer_between_markets.price = Commission(_deC[i])
+                offer_between_markets.price = -Commission(_deC[i])
                 gr[i * 10 + j].append(offer_between_markets)
                 offer_between_markets.market = _deM[k]
                 gr[i * 10 + k].append(offer_between_markets)

@@ -51,10 +51,9 @@ def Counter(data: list):
     dfs(0)
     ans = str()
     pos = N - 1
-    while pos != -1:
+    while pos != 0:
         cur_offer = prev[pos]
         # TODO Добавить справку о обозначениях в Хелп
-        # TODO Если делать хорошо, то цикл должен быть while
         ans += "Buy " if cur_offer.sell_buy else "Sell "
         ans += "Taker " if cur_offer.maker_commission == 100 else "Maker "
         ans += cur_offer.market + " " + cur_offer.init_coin + " " + cur_offer.receive_coin + " | "

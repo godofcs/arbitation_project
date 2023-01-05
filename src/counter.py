@@ -56,7 +56,7 @@ def Counter(data: list):
     for i in range(1, 7):
         for j in range(2, 4):
             for k in range(1, j):
-                offer_between_markets = data[0]
+                offer_between_markets = Offer()
                 offer_between_markets.init_coin = _deC[i]
                 offer_between_markets.receive_coin = _deC[i]
                 offer_between_markets.market = _deM[k]

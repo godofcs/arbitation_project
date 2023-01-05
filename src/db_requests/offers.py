@@ -18,3 +18,6 @@ class Offer(SqlAlchemyBase, SerializerMixin):
     maker_commission = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)
     taker_commission = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)
     last_time_update = sqlalchemy.Column(sqlalchemy.DateTime, nullable=True)
+
+    def __init__(self):
+        sell_buy = True

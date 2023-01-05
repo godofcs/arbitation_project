@@ -44,8 +44,10 @@ def Counter(data: list):
     большой путь. Мы не будем явно транспонировать граф, мы изначально его зададим
     в транспонированном виде.
     """
+    if len(data) == 0:
+        return "Invalid input"
     gr = [[] for i in range(N)]
-    for offer in data:=
+    for offer in data:
         if offer.receive_coin.upper() in _fiat:
             gr[0].append(offer)
         elif offer.receive_coin in _crypto.keys():
@@ -54,9 +56,14 @@ def Counter(data: list):
     for i in range(1, 7):
         for j in range(1, 4):
             for k in range(j):
-                gr[i * 10 + j].append(_LiteOffer(_deC[i], _deC[i], _deM[k], 0, 0, Commission(_deC[i]), None))
+                offer_between_markets = data[0]
+                offer_between_markets.init_coin = _deC[i]
+                offer_between_markets.receive_coin = _deC[i]
+                offer_between_markets.market = _deM[k]
+                offer_between_markets.price = Commission(_deC[i])
+                gr[i * 10 + j].append(offer_between_markets)
                 # здесь в поле маркет указано, куда мы переводим монеты
-    prev = [data[0] for i in range(N)]  # возможен out_of_range
+    prev = [data[0] for i in range(N)]
     prev[0] = -1
     dp = [-INF for i in range(N)]
     dp[0] = 0
@@ -79,7 +86,8 @@ def Counter(data: list):
         if cur_offer.init_coin != cur_offer.receive_coin:
             ans += "Buy " if cur_offer.sell_buy else "Sell "
             ans += "Taker " if cur_offer.maker_commission == 100 else "Maker "
-            ans += cur_offer.market + " " + cur_offer.init_coin + " " + cur_offer.receive_coin + " | "
+            ans += cur_offer.market + " " + cur_offer.init_coin + " " + cur_offer.receive_coin + " "
+            ans += cur_offer.payment + " | "
         else:
             ans += cur_offer.init_coin + " Transfer to next market | "
         pos = PosByCoin(cur_offer, "receive")

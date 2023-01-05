@@ -11,7 +11,7 @@ _market = {"binance": 1, "bybit": 2, "huobi": 3}
 def PosByCoin(coin: Offer, type_of_coin: str):
     coin_name = coin.receive_coin if type_of_coin == "receive" else coin.init_coin
     if coin_name.upper() in _fiat:
-        return N - 1
+        return N - 1 if type_of_coin == "init" else 0
     return _crypto[coin_name] * 10 + _market[coin.market]
 
 
@@ -51,8 +51,7 @@ def Counter(data: list):
     dfs(0)
     ans = str()
     pos = N - 1
-    #while pos != -1:
-    for i in range(2):
+    while pos != -1:
         cur_offer = prev[pos]
         # TODO Добавить справку о обозначениях в Хелп
         # TODO Если делать хорошо, то цикл должен быть while

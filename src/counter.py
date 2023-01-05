@@ -7,7 +7,7 @@ _fiat = {"RUB", "USD", "EUR", "CNY", "GBP"}
 _crypto = {"USDT": 1, "BTC": 2, "BUSD": 3, "BNB": 4, "ETH": 5, "SHIB": 6}
 _market = {"binance": 1, "bybit": 2, "huobi": 3}
 _deC = {1: "USDT", 2: "BTC", 3: "BUSD", 4: "BNB", 5: "ETH", 6: "SHIB"}
-_deM = {1: "binance", 2: "bybit", 3: "okx"}
+_deM = {1: "binance", 2: "bybit", 3: "huobi"}
 
 
 def PosByCoin(coin: Offer, type_of_coin: str):
@@ -59,9 +59,11 @@ def Counter(data: list):
                 offer_between_markets = data[0]
                 offer_between_markets.init_coin = _deC[i]
                 offer_between_markets.receive_coin = _deC[i]
-                offer_between_markets.market = _deM[k]
+                offer_between_markets.market = _deM[j]
                 offer_between_markets.price = Commission(_deC[i])
                 gr[i * 10 + j].append(offer_between_markets)
+                offer_between_markets.market = _deM[k]
+                gr[i * 10 + k].append(offer_between_markets)
                 # здесь в поле маркет указано, куда мы переводим монеты
     prev = [data[0] for i in range(N)]
     prev[0] = -1

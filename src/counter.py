@@ -84,7 +84,6 @@ def Counter(data: list):
     pos = N - 1
     while pos != 0:
         cur_offer = prev[pos]
-        # TODO Добавить справку о обозначениях в Хелп
         if cur_offer.init_coin != cur_offer.receive_coin:
             ans += "Buy " if cur_offer.sell_buy else "Sell "
             ans += "Taker " if cur_offer.maker_commission == 100 else "Maker "

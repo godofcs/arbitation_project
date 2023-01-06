@@ -44,9 +44,15 @@ all_market = {"binance":
 
 limits = {1: 1000, 2: 5000, 3: 10000, 4: 25000, 5: 50000, 6: 100000, 7: 500000, 8: 1000000}
 
+sell_buy = {"sell": 0, "buy": 1}
+
 
 def get_limit(limit_id):
     return limits[limit_id]
+
+
+def get_sell_buy(type):
+    return sell_buy[type]
 
 
 def make_mas_links(cur_fiat, cur_market, cur_crypto, cur_payment):
@@ -95,15 +101,19 @@ def add_to_database(new_offer, limit_id, taker_commission, maker_commission):
     offer = sessions.query(Offer).filter(Offer.market == new_offer[1],
                                          Offer.init_coin == new_offer[2],
                                          Offer.receive_coin == new_offer[3],
+                                         Offer.payment == new_offer[4],
+                                         Offer.sell_buy == get_sell_buy(new_offer[5]),
                                          Offer.id_limit == limit_id).first()
     if offer is None:
         offer = Offer()
         offer.market = new_offer[1]
         offer.init_coin = new_offer[2]
         offer.receive_coin = new_offer[3]
+        offer.payment = new_offer[4]
+        offer.sell_buy = get_sell_buy(new_offer[5])
         offer.id_limit = limit_id
     offer.price = new_offer[0]
-    offer.las_time_update = new_offer[-1]
+    offer.last_time_update = new_offer[-1]
     offer.taker_commission = taker_commission
     offer.maker_commission = maker_commission
     sessions.merge(offer)
@@ -111,16 +121,37 @@ def add_to_database(new_offer, limit_id, taker_commission, maker_commission):
     sessions.close()
 
 
-def checking_the_relevance_of_information():
+def actual_date(last_date):
+    now = datetime.datetime.now()
+    return (now - last_date).seconds < 3600
 
-    pass
+
+def checking_the_relevance_of_information(mas_links, limit_id):
+    sessions = db_session.create_session()
+    new_mas_links = []
+    for link in mas_links:
+        args = link[1]
+        offer = sessions.query(Offer).filter(Offer.market == args[0],
+                                             Offer.init_coin == args[1],
+                                             Offer.receive_coin == args[2],
+                                             Offer.payment == args[3],
+                                             Offer.sell_buy == get_sell_buy(args[4]),
+                                             Offer.id_limit == limit_id
+                                             ).first()
+        if offer is None:
+            new_mas_links.append(link)
+            continue
+        if not actual_date(offer.last_time_update):
+            new_mas_links.append(link)
+    sessions.close()
+    return new_mas_links
 
 
 def parse_argument(limit_id, fiat_mas, market_mas, crypto_mas, payment_mas):
     limit = get_limit(limit_id)
     mas_links = make_mas_links(fiat_mas, market_mas, crypto_mas, payment_mas)
-
-    for link in mas_links[:4]:
+    mas_links = checking_the_relevance_of_information(mas_links, limit_id)
+    for link in mas_links:
         if "binance" in link[0]:
             glass = binance_parse(link[0], limit)
             new_offer = [analyse_glass(glass)] + link[1] + [datetime.datetime.now()]
@@ -142,5 +173,5 @@ def parse_argument(limit_id, fiat_mas, market_mas, crypto_mas, payment_mas):
     ans = []
     for offer in offers:
         ans += [[offer.market, offer.init_coin, offer.receive_coin, offer.id_limit, offer.price, offer.maker_commission,
-              offer.taker_commission, offer.las_time_update]]
+              offer.taker_commission, offer.last_time_update]]
     return ans

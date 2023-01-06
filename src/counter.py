@@ -1,6 +1,6 @@
 from src.db_requests.offers import Offer
 
-N = 81
+N = 71
 INF = 100000000
 
 _fiat = {"RUB", "USD", "EUR", "CNY", "GBP"}
@@ -56,27 +56,24 @@ def Counter(data: list):
     for i in range(1, 7):
         for j in range(2, 4):
             for k in range(1, j):
-                offer_between_markets = Offer()
-                offer_between_markets.init_coin = _deC[i]
-                offer_between_markets.receive_coin = _deC[i]
-                offer_between_markets.market = _deM[k]
-                offer_between_markets.price = -Commission(_deC[i])
-                gr[i * 10 + j].append(offer_between_markets)
-                offer_between_markets.market = _deM[j]
-                gr[i * 10 + k].append(offer_between_markets)
+                offer_between_markets_1 = Offer(_deC[i], _deC[i], -Commission(_deC[i]), _deM[k])
+                gr[i * 10 + j].append(offer_between_markets_1)
+                offer_between_markets_2 = Offer(_deC[i], _deC[i], -Commission(_deC[i]), _deM[j])
+                gr[i * 10 + k].append(offer_between_markets_2)
                 # здесь в поле маркет указано, куда мы переводим монеты
-    prev = [data[0] for i in range(N)]
-    prev[0] = -1
+    prev = [Offer(None, None, None, None) for i in range(N)]
     dp = [-INF for i in range(N)]
     dp[0] = 0
 
     def dfs(v: int, p: int):
         for u in gr[v]:
             pos = PosByCoin(u, "init")
-            if dp[v] + u.price > dp[pos]:
-                dp[pos] = dp[v] + u.price
+            if dp[v] + float(u.price) > dp[pos]:
+                dp[pos] = dp[v] + float(u.price)
                 prev[pos] = u
-            if p // 10 != v // 10:
+                if p // 10 == v // 10:
+                    prev[pos].market = _deM[p % 10]
+            if p // 10 != v // 10 or v // 10 != pos // 10:
                 dfs(pos, v)
 
     dfs(0, -1)

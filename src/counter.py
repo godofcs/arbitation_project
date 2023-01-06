@@ -1,6 +1,6 @@
 from src.db_requests.offers import Offer
 
-N = 81
+N = 71
 INF = 100000000
 
 _fiat = {"RUB", "USD", "EUR", "CNY", "GBP"}
@@ -25,14 +25,7 @@ def Commission(coin_name):
         return 10.0
     elif coin_name == "USDT":
         return 80.0
-    elif coin_name == "BUSD":
-        return 0
-    elif coin_name == "BNB":
-        return 0
-    elif coin_name == "SHIB":
-        return 0
     else:
-        # TODO добавить лог, что пригшла невалидная монета
         return 0
 
 
@@ -56,17 +49,12 @@ def Counter(data: list):
     for i in range(1, 7):
         for j in range(2, 4):
             for k in range(1, j):
-                offer_between_markets = Offer()
-                offer_between_markets.init_coin = _deC[i]
-                offer_between_markets.receive_coin = _deC[i]
-                offer_between_markets.market = _deM[k]
-                offer_between_markets.price = -Commission(_deC[i])
-                gr[i * 10 + j].append(offer_between_markets)
-                offer_between_markets.market = _deM[j]
-                gr[i * 10 + k].append(offer_between_markets)
+                offer_between_markets_1 = Offer(_deC[i], _deC[i], -Commission(_deC[i]), _deM[k])
+                gr[i * 10 + j].append(offer_between_markets_1)
+                offer_between_markets_2 = Offer(_deC[i], _deC[i], -Commission(_deC[i]), _deM[j])
+                gr[i * 10 + k].append(offer_between_markets_2)
                 # здесь в поле маркет указано, куда мы переводим монеты
-    prev = [data[0] for i in range(N)]
-    prev[0] = -1
+    prev = [Offer(None, None, None, None) for i in range(N)]
     dp = [-INF for i in range(N)]
     dp[0] = 0
 
@@ -76,7 +64,9 @@ def Counter(data: list):
             if dp[v] + float(u.price) > dp[pos]:
                 dp[pos] = dp[v] + float(u.price)
                 prev[pos] = u
-            if p // 10 != v // 10:
+                if p // 10 == v // 10:
+                    prev[pos].market = _deM[p % 10]
+            if p // 10 != v // 10 or v // 10 != pos // 10:
                 dfs(pos, v)
 
     dfs(0, -1)
@@ -84,7 +74,6 @@ def Counter(data: list):
     pos = N - 1
     while pos != 0:
         cur_offer = prev[pos]
-        # TODO Добавить справку о обозначениях в Хелп
         if cur_offer.init_coin != cur_offer.receive_coin:
             ans += "Buy " if cur_offer.sell_buy else "Sell "
             ans += "Taker " if cur_offer.maker_commission == 100 else "Maker "

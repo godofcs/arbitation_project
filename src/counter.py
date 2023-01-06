@@ -25,14 +25,7 @@ def Commission(coin_name):
         return 10.0
     elif coin_name == "USDT":
         return 80.0
-    elif coin_name == "BUSD":
-        return 0
-    elif coin_name == "BNB":
-        return 0
-    elif coin_name == "SHIB":
-        return 0
     else:
-        # TODO добавить лог, что пригшла невалидная монета
         return 0
 
 

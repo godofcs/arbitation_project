@@ -7,7 +7,7 @@ from src.db_requests import db_session
 from src.db_requests.offers import Offer
 from pyvirtualdisplay import Display
 
-db_session.global_init("C:/Users/4739409/PycharmProjects/arbitation_project/bd/base.sqlite")
+# db_session.global_init("C:/Users/4739409/PycharmProjects/arbitation_project/bd/base.sqlite")
 
 all_crypto = {"USDT": {"binance": "USDT", "bybit": "USDT", "huobi": "usdt"},
               "BTC": {"binance": "BTC", "bybit": "BTC", "huobi": "btc"},
@@ -121,57 +121,30 @@ def add_to_database(new_offer, limit_id, taker_commission, maker_commission):
     sessions.close()
 
 
-def actual_date(last_date):
-    now = datetime.datetime.now()
-    return (now - last_date).seconds < 3600
-
-
-def checking_the_relevance_of_information(mas_links, limit_id):
-    sessions = db_session.create_session()
-    new_mas_links = []
-    for link in mas_links:
-        args = link[1]
-        offer = sessions.query(Offer).filter(Offer.market == args[0],
-                                             Offer.init_coin == args[1],
-                                             Offer.receive_coin == args[2],
-                                             Offer.payment == args[3],
-                                             Offer.sell_buy == get_sell_buy(args[4]),
-                                             Offer.id_limit == limit_id
-                                             ).first()
-        if offer is None:
-            new_mas_links.append(link)
-            continue
-        if not actual_date(offer.last_time_update):
-            new_mas_links.append(link)
-    sessions.close()
-    return new_mas_links
-
-
 def parse_argument(limit_id, fiat_mas, market_mas, crypto_mas, payment_mas):
     limit = get_limit(limit_id)
     mas_links = make_mas_links(fiat_mas, market_mas, crypto_mas, payment_mas)
-    mas_links = checking_the_relevance_of_information(mas_links, limit_id)
+    mas_add_to_data_base = []
     for link in mas_links:
         if "binance" in link[0]:
             glass = binance_parse(link[0], limit)
             new_offer = [analyse_glass(glass)] + link[1] + [datetime.datetime.now()]
             print("binance", new_offer)
-            add_to_database(new_offer, limit_id, 0.0, 0.1)
+            if new_offer[5] == "buy":
+                mas_add_to_data_base.append([new_offer, limit_id, 0.0, 100])
+            else:
+                mas_add_to_data_base.append([new_offer, limit_id, 100, 0.1])
         elif "bybit" in link[0]:
             glass = bybit_parse(link[0], limit)
             new_offer = [analyse_glass(glass)] + link[1] + [datetime.datetime.now()]
             print("bybit", new_offer)
-            add_to_database(new_offer, limit_id, 0.0, 0.0)
+            mas_add_to_data_base.append([new_offer, limit_id, 0.0, 0.0])
         elif "huobi" in link[0]:
             glass = huobi_parse(link[0], limit, all_payment[link[1][3]]["huobi"])
-            print(link[1][3])
             new_offer = [analyse_glass(glass)] + link[1] + [datetime.datetime.now()]
             print("huobi", new_offer)
-            add_to_database(new_offer, limit_id, 0.0, 0.0)
-    sessions = db_session.create_session()
-    offers = sessions.query(Offer)
-    ans = []
-    for offer in offers:
-        ans += [[offer.market, offer.init_coin, offer.receive_coin, offer.id_limit, offer.price, offer.maker_commission,
-              offer.taker_commission, offer.last_time_update]]
-    return ans
+            mas_add_to_data_base.append([new_offer, limit_id, 0.0, 0.0])
+    for el in mas_add_to_data_base:
+        add_to_database(el[0], el[1], el[2], el[3])
+    # TODO сделать нормальный выбор по параметрам запросу
+

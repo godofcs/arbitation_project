@@ -12,7 +12,7 @@ def Counter(data: list):
             self.market = big_offer.market
             self.payment = big_offer.payment
             self.sell_buy = big_offer.sell_buy
-            self.price = big_offer.price
+            self.price = float(big_offer.price)
             self.maker_commission = big_offer.maker_commission
             self.taker_commission = big_offer.taker_commission
 
@@ -31,11 +31,9 @@ def Counter(data: list):
     def Commission(offer_name):
         # комса указана в рублях
         if offer_name == "BTC":
-            return -246.19
-        elif offer_name == "ETH":
-            return -10.0
+            return 246.19
         elif offer_name == "USDT":
-            return -80.0
+            return 1.0
         else:
             return 0
 
@@ -60,7 +58,8 @@ def Counter(data: list):
         for j in range(2, len(_market) + 1):
             for k in range(1, j):
                 modificate_offer = LiteOffer(data[0])
-                modificate_offer.init_coin, modificate_offer.receive_coin, modificate_offer.price, modificate_offer.market = _deC[i], _deC[i], Commission(_deC[i]), _deM[k]
+                modificate_offer.init_coin, modificate_offer.receive_coin, modificate_offer.price, modificate_offer.market = \
+                    _deC[i], _deC[i], Commission(_deC[i]), _deM[k]
                 offer_between_markets_1 = LiteOffer(modificate_offer)
                 gr[i * 10 + j].append(offer_between_markets_1)
                 modificate_offer.market = _deM[j]
@@ -69,16 +68,25 @@ def Counter(data: list):
                 # здесь в поле маркет указано, куда мы переводим монеты
     prev = [None for i in range(N)]
     dp = [-INF for i in range(N)]
-    dp[0] = 10000
+    dp[0] = 0
 
     def dfs(v: int, p: int):
         for u in gr[v]:
             pos = PosByOffer(u, "init")
-            if dp[v] + float(u.price) > dp[pos]:
-                dp[pos] = dp[v] + float(u.price)
-                prev[pos] = u
-                if p // 10 == v // 10:
-                    prev[pos].market = _deM[p % 10]
+            if u.receive_coin in _crypto.keys():
+                if dp[pos] == -INF:
+                    dp[pos] = dp[v] + u.price
+                    prev[pos] = u
+                elif dp[v] + u.price < dp[pos]:
+                    dp[pos] = dp[v] + u.price
+                    prev[pos] = u
+                    if p // 10 == v // 10:
+                        prev[pos].market = _deM[p % 10]
+            else:
+                if u.price - dp[v] > dp[pos]:
+                    dp[pos] = u.price - dp[v]
+                    prev[pos] = u
+
             if p // 10 != v // 10 or v // 10 != pos // 10:
                 dfs(pos, v)
 
@@ -95,4 +103,8 @@ def Counter(data: list):
         else:
             ans += cur_offer.init_coin + " Transfer to next market | "
         pos = PosByOffer(cur_offer, "receive")
+    if dp[N - 1] >= 0:
+        ans += "PROFITABLY!"
+    else:
+        ans += "UNPROFITABLY :("
     return ans

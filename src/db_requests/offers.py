@@ -1,7 +1,7 @@
 import sqlalchemy
 from sqlalchemy_serializer import SerializerMixin
 
-from db_session import SqlAlchemyBase
+from src.db_requests.db_session import SqlAlchemyBase
 
 
 class Offer(SqlAlchemyBase, SerializerMixin):
@@ -18,3 +18,4 @@ class Offer(SqlAlchemyBase, SerializerMixin):
     maker_commission = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)
     taker_commission = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)
     last_time_update = sqlalchemy.Column(sqlalchemy.DateTime, nullable=True)
+

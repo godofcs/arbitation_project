@@ -5,6 +5,7 @@ from src.parsers.huobi_parser import parse as huobi_parse
 import datetime
 from src.db_requests import db_session
 from src.db_requests.offers import Offer
+from time import sleep
 from pyvirtualdisplay import Display
 
 # db_session.global_init("C:/Users/4739409/PycharmProjects/arbitation_project/bd/base.sqlite")
@@ -13,8 +14,7 @@ all_crypto = {"USDT": {"binance": "USDT", "bybit": "USDT", "huobi": "usdt"},
               "BTC": {"binance": "BTC", "bybit": "BTC", "huobi": "btc"},
               "BUSD": {"binance": "BUSD", "bybit": "-", "huobi": "-"},
               "BNB": {"binance": "BNB", "bybit": "-", "huobi": "-"},
-              "ETH": {"binance": "ETH", "bybit": "ETH", "huobi": "eth"},
-              "SHIB": {"binance": "SHIB", "bybit": "-", "huobi": "-"}}
+              "ETH": {"binance": "ETH", "bybit": "ETH", "huobi": "eth"}}
 all_payment = {"Tinkoff": {"binance": "TinkoffNew", "bybit": "75", "huobi": "Тинькофф"},
                "Sberbank": {"binance": "RosBankNew", "bybit": "185", "huobi": "Сбербанк"},
                "Raiffeisenbank": {"binance": "RaiffeisenBank", "bybit": "64", "huobi": "Райффайзенбанк"},
@@ -42,7 +42,7 @@ all_market = {"binance":
         }
 }
 
-limits = {1: 1000, 2: 5000, 3: 10000, 4: 25000, 5: 50000, 6: 100000, 7: 500000, 8: 1000000}
+limits = {1: 1000, 2: 5000, 3: 10000, 4: 25000, 5: 50000, 6: 100000, 7: 500000}
 
 sell_buy = {"sell": 0, "buy": 1}
 
@@ -91,8 +91,10 @@ def make_mas_links(cur_fiat, cur_market, cur_crypto, cur_payment):
                         else:
                             mas_links.append([link, [market, fiat, crypto, payment, sell_buy]])
     print(len(mas_links))
+    k = 1
     for i in mas_links:
-        print(i)
+        print(k, i)
+        k += 1
     return mas_links
 
 
@@ -125,25 +127,48 @@ def parse_argument(limit_id, fiat_mas, market_mas, crypto_mas, payment_mas):
     limit = get_limit(limit_id)
     mas_links = make_mas_links(fiat_mas, market_mas, crypto_mas, payment_mas)
     mas_add_to_data_base = []
+    k = 1
     for link in mas_links:
         if "binance" in link[0]:
-            glass = binance_parse(link[0], limit)
-            new_offer = [analyse_glass(glass)] + link[1] + [datetime.datetime.now()]
-            print("binance", new_offer)
-            if new_offer[5] == "buy":
-                mas_add_to_data_base.append([new_offer, limit_id, 0.0, 100])
-            else:
-                mas_add_to_data_base.append([new_offer, limit_id, 100, 0.1])
+            for i in range(5):
+                try:
+                    glass = binance_parse(link[0], limit)
+                    new_offer = [analyse_glass(glass)] + link[1] + [datetime.datetime.now()]
+                    print(k, "binance", new_offer)
+                    if new_offer[5] == "buy":
+                        mas_add_to_data_base.append([new_offer, limit_id, 0.0, 100])
+                    else:
+                        mas_add_to_data_base.append([new_offer, limit_id, 100, 0.1])
+                    break
+                except Exception:
+                    sleep(10)
+                    print("Just, I am so tired on binance")
+                    pass
         elif "bybit" in link[0]:
-            glass = bybit_parse(link[0], limit)
-            new_offer = [analyse_glass(glass)] + link[1] + [datetime.datetime.now()]
-            print("bybit", new_offer)
-            mas_add_to_data_base.append([new_offer, limit_id, 0.0, 0.0])
+            for i in range(5):
+                try:
+                    glass = bybit_parse(link[0], limit)
+                    new_offer = [analyse_glass(glass)] + link[1] + [datetime.datetime.now()]
+                    print(k, "bybit", new_offer)
+                    mas_add_to_data_base.append([new_offer, limit_id, 0.0, 0.0])
+                    break
+                except Exception:
+                    sleep(10)
+                    print("Just, I am so tired on bybit")
+                    pass
         elif "huobi" in link[0]:
-            glass = huobi_parse(link[0], limit, all_payment[link[1][3]]["huobi"])
-            new_offer = [analyse_glass(glass)] + link[1] + [datetime.datetime.now()]
-            print("huobi", new_offer)
-            mas_add_to_data_base.append([new_offer, limit_id, 0.0, 0.0])
+            for i in range(5):
+                try:
+                    glass = huobi_parse(link[0], limit, all_payment[link[1][3]]["huobi"])
+                    new_offer = [analyse_glass(glass)] + link[1] + [datetime.datetime.now()]
+                    print(k, "huobi", new_offer)
+                    mas_add_to_data_base.append([new_offer, limit_id, 0.0, 0.0])
+                    break
+                except Exception:
+                    sleep(10)
+                    print("Just, I am so tired on huobi")
+                    pass
+        k += 1
     for el in mas_add_to_data_base:
         add_to_database(el[0], el[1], el[2], el[3])
     # TODO сделать нормальный выбор по параметрам запросу

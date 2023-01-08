@@ -1,35 +1,44 @@
 from src.db_requests.offers import Offer
 
-N = 71
-INF = 100000000
-
-_fiat = {"RUB", "USD", "EUR", "CNY", "GBP"}
-_crypto = {"USDT": 1, "BTC": 2, "BUSD": 3, "BNB": 4, "ETH": 5, "SHIB": 6}
-_market = {"binance": 1, "bybit": 2, "huobi": 3}
-_deC = {1: "USDT", 2: "BTC", 3: "BUSD", 4: "BNB", 5: "ETH", 6: "SHIB"}
-_deM = {1: "binance", 2: "bybit", 3: "huobi"}
-
-
-def PosByCoin(coin: Offer, type_of_coin: str):
-    coin_name = coin.receive_coin if type_of_coin == "receive" else coin.init_coin
-    if coin_name.upper() in _fiat:
-        return N - 1 if type_of_coin == "init" else 0
-    return _crypto[coin_name] * 10 + _market[coin.market]
-
-
-def Commission(coin_name):
-    # комса указана в рублях
-    if coin_name == "BTC":
-        return 246.19
-    elif coin_name == "ETH":
-        return 10.0
-    elif coin_name == "USDT":
-        return 80.0
-    else:
-        return 0
-
 
 def Counter(data: list):
+    N = 71
+    INF = 100000000
+
+    class LiteOffer:
+        def __init__(self, big_offer):
+            self.receive_coin = big_offer.receive_coin
+            self.init_coin = big_offer.init_coin
+            self.market = big_offer.market
+            self.payment = big_offer.payment
+            self.sell_buy = big_offer.sell_buy
+            self.price = big_offer.price
+            self.maker_commission = big_offer.maker_commission
+            self.taker_commission = big_offer.taker_commission
+
+    _fiat = {"RUB", "USD", "EUR", "CNY", "GBP"}
+    _crypto = {"USDT": 1, "BTC": 2, "BUSD": 3, "BNB": 4, "ETH": 5}
+    _market = {"binance": 1, "bybit": 2, "huobi": 3}
+    _deC = {1: "USDT", 2: "BTC", 3: "BUSD", 4: "BNB", 5: "ETH"}
+    _deM = {1: "binance", 2: "bybit", 3: "huobi"}
+
+    def PosByOffer(offer: LiteOffer, type_of_offer: str):
+        offer_name = offer.receive_coin if type_of_offer == "receive" else offer.init_coin
+        if offer_name.upper() in _fiat:
+            return N - 1 if type_of_offer == "init" else 0
+        return _crypto[offer_name] * 10 + _market[offer.market]
+
+    def Commission(offer_name):
+        # комса указана в рублях
+        if offer_name == "BTC":
+            return -246.19
+        elif offer_name == "ETH":
+            return -10.0
+        elif offer_name == "USDT":
+            return -80.0
+        else:
+            return 0
+
     """
     Поиск релазиован с помощью алгоритма поиска наибольшего пути
     в ациклическом графе. Для этого нам нужно транспонировать исходный граф,
@@ -41,26 +50,30 @@ def Counter(data: list):
         return "Invalid input"
     gr = [[] for i in range(N)]
     for offer in data:
-        if offer.receive_coin.upper() in _fiat:
-            gr[0].append(offer)
-        elif offer.receive_coin in _crypto.keys():
-            gr[PosByCoin(offer, "receive")].append(offer)
+        lite_offer = LiteOffer(offer)
+        if lite_offer.receive_coin.upper() in _fiat:
+            gr[0].append(lite_offer)
+        elif lite_offer.receive_coin in _crypto.keys():
+            gr[PosByOffer(lite_offer, "receive")].append(lite_offer)
         # TODO Вот тут можно прикрутить лог, если пришла непонятная моментка
-    for i in range(1, 7):
-        for j in range(2, 4):
+    for i in range(1, len(_crypto) + 1):
+        for j in range(2, len(_market) + 1):
             for k in range(1, j):
-                offer_between_markets_1 = Offer(_deC[i], _deC[i], -Commission(_deC[i]), _deM[k])
+                modificate_offer = LiteOffer(data[0])
+                modificate_offer.init_coin, modificate_offer.receive_coin, modificate_offer.price, modificate_offer.market = _deC[i], _deC[i], Commission(_deC[i]), _deM[k]
+                offer_between_markets_1 = LiteOffer(modificate_offer)
                 gr[i * 10 + j].append(offer_between_markets_1)
-                offer_between_markets_2 = Offer(_deC[i], _deC[i], -Commission(_deC[i]), _deM[j])
+                modificate_offer.market = _deM[j]
+                offer_between_markets_2 = LiteOffer(modificate_offer)
                 gr[i * 10 + k].append(offer_between_markets_2)
                 # здесь в поле маркет указано, куда мы переводим монеты
-    prev = [Offer(None, None, None, None) for i in range(N)]
+    prev = [None for i in range(N)]
     dp = [-INF for i in range(N)]
-    dp[0] = 0
+    dp[0] = 10000
 
     def dfs(v: int, p: int):
         for u in gr[v]:
-            pos = PosByCoin(u, "init")
+            pos = PosByOffer(u, "init")
             if dp[v] + float(u.price) > dp[pos]:
                 dp[pos] = dp[v] + float(u.price)
                 prev[pos] = u
@@ -81,5 +94,5 @@ def Counter(data: list):
             ans += cur_offer.payment + " | "
         else:
             ans += cur_offer.init_coin + " Transfer to next market | "
-        pos = PosByCoin(cur_offer, "receive")
+        pos = PosByOffer(cur_offer, "receive")
     return ans

@@ -22,6 +22,8 @@ def get_average_ord(glass):
         if pos[ord]:
             summ += pos[ord]
             kol += 1
+    if kol == 0:
+        return 0
     return summ / kol
 
 

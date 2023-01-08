@@ -100,7 +100,7 @@ def parse(link, limit):
         try:
             element = driver.find_element(By.CLASS_NAME, "css-1mf6m87")
             pos_element = element.find_elements(By.CLASS_NAME, "css-ovjtyv")
-            if len(pos_element) > 7:
+            if len(pos_element) > 1:
                 break
         except Exception:
             pass

@@ -32,10 +32,8 @@ def Counter(data: list):
         # комса указана в рублях
         if offer_name == "BTC":
             return 246.19
-        elif offer_name == "ETH":
-            return 10.0
         elif offer_name == "USDT":
-            return 80.0
+            return 1.0
         else:
             return 0
 

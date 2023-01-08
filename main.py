@@ -7,7 +7,7 @@ db_session.global_init("C:/Users/4739409/PycharmProjects/arbitation_project/bd/b
 
 if __name__ == "__main__":
     # limit_id, fiat_mas, market_mas, crypto_mas, payment_mas = get_next_position_in_query()
-    all_offers = get_offers.get_offers(["RUB"], ["BTC", "ETH", "USDT", "BUSD", "BNB", "SHIB"], [2],
+    all_offers = get_offers.get_offers(["RUB"], ["BTC", "ETH", "USDT", "BUSD", "BNB"], [2],
                                        ["binance", "bybit", "huobi"], ["Tinkoff", "Sberbank", "Raiffeisenbank"])
     for offers in all_offers:
         print(counter.Counter(offers))

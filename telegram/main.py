@@ -195,7 +195,6 @@ def bank(message):
 
 
 def pre_bank(message):
-    print(message.text.strip() == DONE)
     if message.text.strip() == START_OVER_BUTTON:
         user_clear()
         message.text = START_BUTTON

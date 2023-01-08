@@ -107,7 +107,7 @@ def add_to_database(new_offer, limit_id, taker_commission, maker_commission):
                                          Offer.sell_buy == get_sell_buy(new_offer[5]),
                                          Offer.id_limit == limit_id).first()
     if offer is None:
-        offer = Offer("", "", 1, "")
+        offer = Offer()
         offer.market = new_offer[1]
         offer.init_coin = new_offer[2]
         offer.receive_coin = new_offer[3]

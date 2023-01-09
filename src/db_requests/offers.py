@@ -5,16 +5,16 @@ from src.db_requests.db_session import SqlAlchemyBase
 
 
 class Offer(SqlAlchemyBase, SerializerMixin):
-    __tablename__ = 'offers'
+    __tablename__ = 'offer'
 
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
-    market = sqlalchemy.Column(sqlalchemy.String(7))
-    payment = sqlalchemy.Column(sqlalchemy.String(14))
-    sell_buy = sqlalchemy.Column(sqlalchemy.Boolean)
-    init_coin = sqlalchemy.Column(sqlalchemy.String(5))
-    receive_coin = sqlalchemy.Column(sqlalchemy.String(5))
-    id_limit = sqlalchemy.Column(sqlalchemy.Integer)
-    price = sqlalchemy.Column(sqlalchemy.Float)
-    maker_commission = sqlalchemy.Column(sqlalchemy.Float)
-    taker_commission = sqlalchemy.Column(sqlalchemy.Float)
+    market = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    payment = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    sell_buy = sqlalchemy.Column(sqlalchemy.Boolean, nullable=True)
+    init_coin = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    receive_coin = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    id_limit = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)
+    price = sqlalchemy.Column(sqlalchemy.DECIMAL, nullable=True)
+    maker_commission = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)
+    taker_commission = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)
 

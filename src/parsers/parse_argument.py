@@ -2,7 +2,6 @@ from src.parsers.binance_parser import parse as binance_parse
 from src.parsers.bybit_parser import parse as bybit_parse
 from src.analyse import analyse_glass
 from src.parsers.huobi_parser import parse as huobi_parse
-import datetime
 from src.db_requests import db_session
 from src.db_requests.offers import Offer
 from time import sleep
@@ -115,7 +114,6 @@ def add_to_database(new_offer, limit_id, taker_commission, maker_commission):
         offer.sell_buy = get_sell_buy(new_offer[5])
         offer.id_limit = limit_id
     offer.price = new_offer[0]
-    offer.last_time_update = new_offer[-1]
     offer.taker_commission = taker_commission
     offer.maker_commission = maker_commission
     sessions.merge(offer)
@@ -133,12 +131,12 @@ def parse_argument(limit_id, fiat_mas, market_mas, crypto_mas, payment_mas):
             for i in range(5):
                 try:
                     glass = binance_parse(link[0], limit)
-                    new_offer = [analyse_glass(glass)] + link[1] + [datetime.datetime.now()]
+                    new_offer = [analyse_glass(glass)] + link[1]
                     print(k, "binance", new_offer)
                     if new_offer[5] == "buy":
-                        mas_add_to_data_base.append([new_offer, limit_id, 0.0, 100])
+                        mas_add_to_data_base.append([new_offer, limit_id, 0.0, 0.1])
                     else:
-                        mas_add_to_data_base.append([new_offer, limit_id, 100, 0.1])
+                        mas_add_to_data_base.append([new_offer, limit_id, 0.0, 100])
                     break
                 except Exception:
                     sleep(10)
@@ -148,7 +146,7 @@ def parse_argument(limit_id, fiat_mas, market_mas, crypto_mas, payment_mas):
             for i in range(5):
                 try:
                     glass = bybit_parse(link[0], limit)
-                    new_offer = [analyse_glass(glass)] + link[1] + [datetime.datetime.now()]
+                    new_offer = [analyse_glass(glass)] + link[1]
                     print(k, "bybit", new_offer)
                     mas_add_to_data_base.append([new_offer, limit_id, 0.0, 0.0])
                     break
@@ -160,7 +158,7 @@ def parse_argument(limit_id, fiat_mas, market_mas, crypto_mas, payment_mas):
             for i in range(5):
                 try:
                     glass = huobi_parse(link[0], limit, all_payment[link[1][3]]["huobi"])
-                    new_offer = [analyse_glass(glass)] + link[1] + [datetime.datetime.now()]
+                    new_offer = [analyse_glass(glass)] + link[1]
                     print(k, "huobi", new_offer)
                     mas_add_to_data_base.append([new_offer, limit_id, 0.0, 0.0])
                     break

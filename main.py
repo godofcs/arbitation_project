@@ -9,5 +9,7 @@ if __name__ == "__main__":
     # limit_id, fiat_mas, market_mas, crypto_mas, payment_mas = get_next_position_in_query()
     all_offers = get_offers.get_offers(["RUB"], ["BTC", "ETH", "USDT", "BUSD", "BNB"], [2],
                                        ["binance", "bybit", "huobi"], ["Tinkoff", "Sberbank", "Raiffeisenbank"])
-    for offers in all_offers:
-        print(counter.Counter(offers))
+    for one_limit_id in all_offers:
+        print(f"Это связки для следующих значений лимита: {one_limit_id[0]}")
+        for offers in one_limit_id[1:]:
+            print(counter.Counter(offers))

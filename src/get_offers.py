@@ -2,13 +2,17 @@ from src.db_requests import db_session
 from src.db_requests.offers import Offer
 
 
+limits = {1: 1000, 2: 5000, 3: 10000, 4: 25000, 5: 50000, 6: 100000, 7: 500000}
+
+
 def get_offers(cur_fiat: list, cur_cripto: list, cur_limit_id: list, cur_market: list, cur_payment: list):
     sessions = db_session.create_session()
     all_offers = []
-    for it_crypto in cur_cripto:
-        ans = []
-        for it_payment in cur_payment:
-            for it_limit_id in cur_limit_id:
+    for it_limit_id in cur_limit_id:
+        ans_for_one_limit_id = [limits[it_limit_id]]
+        for it_crypto in cur_cripto:
+            ans = []
+            for it_payment in cur_payment:
                 for it_market in cur_market:
                     for it_fiat in cur_fiat:
                         offers = sessions.query(Offer).filter(Offer.market == it_market,
@@ -25,5 +29,6 @@ def get_offers(cur_fiat: list, cur_cripto: list, cur_limit_id: list, cur_market:
                             ans.append(offer)
                         for offer in rev_offers:
                             ans.append(offer)
-        all_offers.append(ans)
+            ans_for_one_limit_id.append(ans)
+        all_offers.append(ans_for_one_limit_id)
     return all_offers

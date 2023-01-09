@@ -17,5 +17,4 @@ class Offer(SqlAlchemyBase, SerializerMixin):
     price = sqlalchemy.Column(sqlalchemy.DECIMAL, nullable=True)
     maker_commission = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)
     taker_commission = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)
-    last_time_update = sqlalchemy.Column(sqlalchemy.DateTime, nullable=True)
 

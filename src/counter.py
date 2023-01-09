@@ -73,18 +73,19 @@ def Counter(data: list):
     def dfs(v: int, p: int):
         for u in gr[v]:
             pos = PosByOffer(u, "init")
+            cur_commission = (u.taker_commission if u.maker_commission == 100 else u.maker_commission) / 100
             if u.receive_coin in _crypto.keys():
                 if dp[pos] == -INF:
-                    dp[pos] = dp[v] + u.price
+                    dp[pos] = dp[v] + u.price - u.price * cur_commission
                     prev[pos] = u
                 elif dp[v] + u.price < dp[pos]:
-                    dp[pos] = dp[v] + u.price
+                    dp[pos] = dp[v] + u.price - u.price * cur_commission
                     prev[pos] = u
                     if p // 10 == v // 10:
                         prev[pos].market = _deM[p % 10]
             else:
                 if u.price - dp[v] > dp[pos]:
-                    dp[pos] = u.price - dp[v]
+                    dp[pos] = u.price - dp[v] - u.price * cur_commission
                     prev[pos] = u
 
             if p // 10 != v // 10 or v // 10 != pos // 10:
@@ -99,9 +100,9 @@ def Counter(data: list):
             ans += "Buy " if cur_offer.sell_buy else "Sell "
             ans += "Taker " if cur_offer.maker_commission == 100 else "Maker "
             ans += cur_offer.market + " " + cur_offer.init_coin + " " + cur_offer.receive_coin + " "
-            ans += cur_offer.payment + " | "
+            ans += cur_offer.payment + " -> "
         else:
-            ans += cur_offer.init_coin + " Transfer to next market | "
+            ans += cur_offer.init_coin + " Transfer to next market -> "
         pos = PosByOffer(cur_offer, "receive")
     if dp[N - 1] >= 0:
         ans += "PROFITABLY!"

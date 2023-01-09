@@ -1,4 +1,4 @@
-from selenium.webdriver import Chrome
+from selenium.webdriver import Chrome, ChromeOptions
 from selenium.webdriver.common.by import By
 from time import sleep
 
@@ -76,7 +76,9 @@ def get_glass_position(driver):
 
 
 def parse(link, limit):
-    driver = Chrome(executable_path="./chromedriver.exe")
+    options = ChromeOptions()
+    options.add_argument('headless')
+    driver = Chrome(executable_path="./chromedriver.exe", chrome_options=options)
     driver.get(link)
     kol = 0
     while kol < 30:

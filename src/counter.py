@@ -73,7 +73,7 @@ def Counter(data: list):
     def dfs(v: int, p: int):
         for u in gr[v]:
             pos = PosByOffer(u, "init")
-            cur_commission = (u.taker_commission if u.maker_commission == 100 else u.maker_commission) / 100
+            cur_commission = (min(u.taker_commission, u.maker_commission)) / 100
             if u.receive_coin in _crypto.keys():
                 if dp[pos] == -INF:
                     dp[pos] = dp[v] + u.price - u.price * cur_commission

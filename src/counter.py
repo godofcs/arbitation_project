@@ -53,7 +53,8 @@ def Counter(data: list):
             gr[0].append(lite_offer)
         elif lite_offer.receive_coin in _crypto.keys():
             gr[PosByOffer(lite_offer, "receive")].append(lite_offer)
-        # TODO Вот тут можно прикрутить лог, если пришла непонятная моментка
+        else:
+            print(offer.id, "Invalid Offer")
     for i in range(1, len(_crypto) + 1):
         for j in range(2, len(_market) + 1):
             for k in range(1, j):
@@ -73,7 +74,7 @@ def Counter(data: list):
     def dfs(v: int, p: int):
         for u in gr[v]:
             pos = PosByOffer(u, "init")
-            cur_commission = (u.taker_commission if u.maker_commission == 100 else u.maker_commission) / 100
+            cur_commission = (min(u.taker_commission, u.maker_commission)) / 100
             if u.receive_coin in _crypto.keys():
                 if dp[pos] == -INF:
                     dp[pos] = dp[v] + u.price - u.price * cur_commission
@@ -98,7 +99,7 @@ def Counter(data: list):
         cur_offer = prev[pos]
         if cur_offer.init_coin != cur_offer.receive_coin:
             ans += "Buy " if cur_offer.sell_buy else "Sell "
-            ans += "Taker " if cur_offer.maker_commission == 100 else "Maker "
+            ans += "Taker " if cur_offer.maker_commission > cur_offer.taker_commission else "Maker "
             ans += cur_offer.market + " " + cur_offer.init_coin + " " + cur_offer.receive_coin + " "
             ans += cur_offer.payment + " -> "
         else:

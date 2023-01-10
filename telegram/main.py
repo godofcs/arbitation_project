@@ -1,6 +1,7 @@
 import telebot
 from telebot import types
 
+API_KEY = "5630556319:AAHEgv_ykF1L5EADrJnzte6DTy9eyJg8nbE"
 
 ALL_MARKETS = ['Binance', 'ByBit', 'Okx', 'Huobi']
 ALL_CURRENCY = ['RUB', 'USD', 'EUR', 'CNY', 'GBP']

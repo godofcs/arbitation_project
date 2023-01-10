@@ -14,6 +14,7 @@ def global_init():
     if __factory:
         return
 
+    conn_str = f'postgresql://postgres:NP9IGumJsdIvnDfVkOd0@containers-us-west-192.railway.app:6504/railway'
     print(f'Подключение к базе данных по адресу {conn_str}')
 
     engine = sa.create_engine(conn_str)

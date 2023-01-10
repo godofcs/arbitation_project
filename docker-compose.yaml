@@ -1,0 +1,11 @@
+version: "3"
+
+services:
+  web:
+    build: .
+    container_name: tele_bot
+    command: python ./telegram/main.py
+    ports:
+      - 8000:8000
+    volumes:
+      - ./:/tele_bot

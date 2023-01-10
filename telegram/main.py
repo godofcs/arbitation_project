@@ -1,5 +1,7 @@
 import telebot
 from telebot import types
+import pika
+import json
 
 API_KEY = "5630556319:AAHEgv_ykF1L5EADrJnzte6DTy9eyJg8nbE"
 
@@ -205,7 +207,7 @@ def pre_bank(message):
         help(message)
         return
     elif message.text.strip() == DONE:
-        answer(message)
+        pre_answer(message)
         return
     else:
         global user_bank
@@ -221,7 +223,7 @@ def pre_bank(message):
         bank(message)
 
 
-def answer(message):
+def pre_answer(message):
     global user_bank
     if message.text.strip() == START_OVER_BUTTON:
         user_clear()
@@ -234,11 +236,26 @@ def answer(message):
         return
     elif message.text.strip() == DONE:
         bot.send_message(message.chat.id, "We are working...")
-        print(user_bank, user_limit, user_currency, user_stock_markets)
+        connection_params = pika.ConnectionParameters('localhost', 5672)
+        connection = pika.BlockingConnection(connection_params)
+        channel = connection.channel()
+
+        channel.queue_declare(queue="from_bot_to_parser")
+        channel.basic_publish(exchange='',
+                              routing_key='from_bot_to_parser',
+                              body=json.dumps([user_currency, user_limit, user_bank, user_stock_markets]),
+                              properties=pika.BasicProperties(
+                                  delivery_mode=2
+                              ))
+        connection.close()
+        bot.register_next_step_handler(message, answer)
     else:
         bot.send_message(message.chat.id, "I can't understand you shorty)")
         bank(message)
         return
 
+
+def answer(message):
+    print(1)
 
 bot.polling(none_stop=True)

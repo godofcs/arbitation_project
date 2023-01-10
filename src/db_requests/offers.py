@@ -14,7 +14,7 @@ class Offer(SqlAlchemyBase, SerializerMixin):
     init_coin = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     receive_coin = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     id_limit = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)
-    price = sqlalchemy.Column(sqlalchemy.DECIMAL, nullable=True)
-    maker_commission = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)
-    taker_commission = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)
+    price = sqlalchemy.Column(sqlalchemy.REAL, nullable=True)
+    maker_commission = sqlalchemy.Column(sqlalchemy.REAL, nullable=True)
+    taker_commission = sqlalchemy.Column(sqlalchemy.REAL, nullable=True)
 

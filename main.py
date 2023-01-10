@@ -3,7 +3,7 @@ from src import get_offers
 from src import counter
 from src.db_requests import db_session
 
-db_session.global_init("C:/Users/4739409/PycharmProjects/arbitation_project/bd/base.sqlite")
+db_session.global_init("root:9e6vmrmIGWZvQ6qylywn@containers-us-west-200.railway.app:7182/railway")
 
 if __name__ == "__main__":
     # limit_id, fiat_mas, market_mas, crypto_mas, payment_mas = get_next_position_in_query()

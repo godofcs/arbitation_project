@@ -13,8 +13,8 @@ def Counter(data: list):
             self.payment = big_offer.payment
             self.sell_buy = big_offer.sell_buy
             self.price = float(big_offer.price)
-            self.maker_commission = big_offer.maker_commission
-            self.taker_commission = big_offer.taker_commission
+            self.maker_commission = float(big_offer.maker_commission)
+            self.taker_commission = float(big_offer.taker_commission)
 
     _fiat = {"RUB", "USD", "EUR", "CNY", "GBP"}
     _crypto = {"USDT": 1, "BTC": 2, "BUSD": 3, "BNB": 4, "ETH": 5}

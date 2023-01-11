@@ -1,5 +1,7 @@
-from selenium.webdriver import Chrome, ChromeOptions
+from selenium.webdriver import Chrome
 from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
 from time import sleep
 
 
@@ -76,9 +78,10 @@ def get_glass_position(driver):
 
 
 def parse(link, limit):
-    options = ChromeOptions()
-    options.add_argument('headless')
-    driver = Chrome(executable_path="./chromedriver.exe", chrome_options=options)
+    path = Service("chromedriver.exe")
+    option = Options()
+    option.headless = True
+    driver = Chrome(service=path, options=option)
     driver.get(link)
     kol = 0
     while kol < 30:
@@ -110,6 +113,7 @@ def parse(link, limit):
     pos = get_glass_position(driver)
     driver.close()
     return pos
+
 
 #if __name__ == "__main__":
 #    print(parse("https://p2p.binance.com/ru/trade/sell/USDT?fiat=RUB&payment=TinkoffNew", 1000))

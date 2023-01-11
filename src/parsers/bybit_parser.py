@@ -1,6 +1,9 @@
-from selenium.webdriver import Chrome, ChromeOptions
+from selenium.webdriver import Chrome
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common import keys
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+from selenium_stealth import stealth
 from time import sleep
 
 
@@ -74,28 +77,34 @@ def get_glass_position(driver):
 
 
 def parse(link, limit):
-    options = ChromeOptions()
-    options.add_argument('headless')
-    driver = Chrome(executable_path="./chromedriver.exe", chrome_options=options)
+    path = Service("chromedriver.exe")
+    option = Options()
+    option.headless = True
+    driver = Chrome(service=path)#, options=option)
     driver.get(link)
+    driver.maximize_window()
     kol = 0
-    count = 0
-    while kol < 30:
-        sleep(1)
+    while kol < 10:
         try:
+            sleep(1)
+           # print(0)
             pre_buttons = driver.find_element(By.CLASS_NAME, "by-dialog__head")
+            #print(pre_buttons)
+           # print(1)
             buttons = pre_buttons.find_elements(By.CSS_SELECTOR, "span")
+           # print(2)
             for button in buttons:
+                #print(3)
                 button.click()
-                count += 1
-            if count >= 2:
-                break
+            #print("Norm")
+            break
         except Exception:
             pass
         kol += 1
+   # print("First window")
     # Это на всякий случай
     kol = 0
-    driver.maximize_window()
+    #driver.maximize_window()
     while kol < 2:
         sleep(1)
         try:
@@ -103,25 +112,29 @@ def parse(link, limit):
             buttons = pre_buttons.find_elements(By.CSS_SELECTOR, "i")
             for button in buttons:
                 button.click()
+            #print("Super cool")
             break
         except Exception:
             pass
         kol += 1
+    #print("Second window")
     kol = 0
     while kol < 5:
         sleep(1)
         try:
             button = driver.find_element(By.CLASS_NAME, "by-dialog__btn")
             button.click()
-            print("cool")
+            #print("cool")
             break
         except Exception:
             pass
         kol += 1
+    #print("Terd window")
     # До сюда
-    driver.set_window_size(1000, 800)
+    #driver.set_window_size(1000, 800)
     kol = 0
     while kol < 30:
+       # print(kol)
         sleep(1)
         try:
             input_place = driver.find_elements(By.CLASS_NAME, "by-input__inner")[1]
@@ -132,6 +145,7 @@ def parse(link, limit):
         except Exception:
             pass
         kol += 1
+    #print("Limit")
     kol = 0
     while kol < 30:
         sleep(1)
@@ -143,8 +157,10 @@ def parse(link, limit):
         except Exception:
             pass
         kol += 1
+    #print("Table")
     pos = get_glass_position(driver)
     driver.close()
+    #print(pos)
     return pos
 
 

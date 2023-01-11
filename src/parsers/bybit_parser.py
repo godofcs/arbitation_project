@@ -1,10 +1,11 @@
-from selenium.webdriver import Chrome
+from selenium.webdriver import Firefox
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common import keys
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.firefox.service import Service
+from selenium.webdriver.firefox.options import Options
 from selenium_stealth import stealth
 from time import sleep
+import os
 
 
 def get_name(el):
@@ -77,10 +78,14 @@ def get_glass_position(driver):
 
 
 def parse(link, limit):
-    path = Service("chromedriver.exe")
-    option = Options()
-    option.headless = True
-    driver = Chrome(service=path)#, options=option)
+    #path = Service(r"C:\Users\4739409\PycharmProjects\arbitation_project\src\parsers\geckodriver.exe")
+    #option = Options()
+    print(os.path.join("geckodriver.exe"))
+    options = Options()
+    options.binary_location = os.path.join("geckodriver.exe")
+    driver = Firefox(executable_path=r"MozillaFirefox\firefox.exe", options=options)
+    #option.headless = True
+    #driver = Firefox(executable_path="geckodriver.exe")#, options=option)
     driver.get(link)
     driver.maximize_window()
     kol = 0
@@ -164,7 +169,7 @@ def parse(link, limit):
     return pos
 
 
-#if __name__ == "__main__":
-#    print(parse("https://www.bybit.com/fiat/trade/otc/?actionType=0&token=BTC&fiat=RUB&paymentMethod=64", 10000))
+if __name__ == "__main__":
+    print(parse("https://www.bybit.com/fiat/trade/otc/?actionType=0&token=BTC&fiat=RUB&paymentMethod=64", 10000))
 
 

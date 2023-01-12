@@ -81,6 +81,7 @@ def parse(link, limit):
     option = Options()
     option.headless = True
     driver = Firefox(options=option)
+    driver.set_window_size(1920, 1080)
     driver.get(link)
     kol = 0
     while kol < 10:

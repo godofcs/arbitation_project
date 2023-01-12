@@ -82,7 +82,7 @@ def parse(link, limit):
     options.headless = True
     driver = Firefox(options=options)
     driver.get(link)
-    driver.maximize_window()
+    driver.set_window_size(1920, 1080)
     kol = 0
     while kol < 10:
         try:
@@ -120,7 +120,7 @@ def parse(link, limit):
         kol += 1
     # До сюда
     kol = 0
-    while kol < 30:
+    while kol < 10:
         sleep(1)
         try:
             input_place = driver.find_elements(By.CLASS_NAME, "by-input__inner")[1]
@@ -132,7 +132,7 @@ def parse(link, limit):
             pass
         kol += 1
     kol = 0
-    while kol < 30:
+    while kol < 10:
         sleep(1)
         try:
             element = driver.find_elements(By.XPATH, "//table/tbody/tr")

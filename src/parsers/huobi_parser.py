@@ -92,13 +92,14 @@ def parse(link, limit, cur_payment):
     option = Options()
     option.headless = True
     driver = Firefox(options=option)
+    driver.set_window_size(1920, 1080)
     driver.get(link)
     # Это на всякий случай
     kol = 0
-    while kol < 30:
+    while kol < 15:
         sleep(1)
         try:
-            button = driver.find_element(By.CLASS_NAME, "video-close")
+            button = driver.find_element(By.CLASS_NAME, "close-box")
             if button:
                 button.click()
                 break
@@ -106,7 +107,7 @@ def parse(link, limit, cur_payment):
             pass
         kol += 1
     kol = 0
-    while kol < 30:
+    while kol < 15:
         sleep(1)
         try:
             payment = driver.find_element(By.CLASS_NAME, "search-amount-container")
@@ -120,7 +121,7 @@ def parse(link, limit, cur_payment):
             pass
         kol += 1
     kol = 0
-    while kol < 30:
+    while kol < 15:
         sleep(1)
         try:
             pre = driver.find_elements(By.CLASS_NAME, "pay-search-container")[2]
@@ -140,11 +141,10 @@ def parse(link, limit, cur_payment):
             pass
         kol += 1
     kol = 0
-    while kol < 30:
+    while kol < 15:
         sleep(1)
         try:
             element = driver.find_elements(By.CLASS_NAME, "otc-trade-list")
-            #print(len(element))
             if len(element) > 1:
                 break
         except Exception:

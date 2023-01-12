@@ -10,7 +10,7 @@ limits = {1: 1000, 2: 5000, 3: 10000, 4: 25000, 5: 50000, 6: 100000}
 
 
 def run_parser():
-    threads = [threading.Thread(target=foo, args=[i], daemon=True) for i in limits.keys()]
+    threads = [threading.Thread(target=foo, args=[i], daemon=True) for i in [1]]#limits.keys()]
     for thread in threads:
         print("Thread start")
         thread.start()

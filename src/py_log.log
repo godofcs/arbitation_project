@@ -1,0 +1,6 @@
+DEBUG:root:A DEBUG Message
+INFO:root:An INFO
+WARNING:root:A WARNING
+ERROR:root:An ERROR
+CRITICAL:root:A message of CRITICAL severity
+ERROR:root:division by zero

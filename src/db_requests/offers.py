@@ -1,18 +1,18 @@
 import sqlalchemy
 from sqlalchemy_serializer import SerializerMixin
 
-from src.db_requests.db_session import SqlAlchemyBase
+from db_requests.db_session import SqlAlchemyBase
 
 
 class Offer(SqlAlchemyBase, SerializerMixin):
     __tablename__ = 'offers'
 
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
-    market = sqlalchemy.Column(sqlalchemy.String(7))
-    payment = sqlalchemy.Column(sqlalchemy.String(14))
-    sell_buy = sqlalchemy.Column(sqlalchemy.Boolean)
-    init_coin = sqlalchemy.Column(sqlalchemy.String(5))
-    receive_coin = sqlalchemy.Column(sqlalchemy.String(5))
+    market = sqlalchemy.Column(sqlalchemy.Text)
+    payment = sqlalchemy.Column(sqlalchemy.Text)
+    sell_buy = sqlalchemy.Column(sqlalchemy.Integer)
+    init_coin = sqlalchemy.Column(sqlalchemy.Text)
+    receive_coin = sqlalchemy.Column(sqlalchemy.Text)
     id_limit = sqlalchemy.Column(sqlalchemy.Integer)
     price = sqlalchemy.Column(sqlalchemy.Float)
     maker_commission = sqlalchemy.Column(sqlalchemy.Float)

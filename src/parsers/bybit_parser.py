@@ -1,7 +1,11 @@
 from selenium.webdriver import Firefox
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common import keys
+from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.firefox.options import Options
+from selenium_stealth import stealth
 from time import sleep
+import os
 
 
 def get_name(el):
@@ -79,7 +83,7 @@ def parse(link, limit):
     option.headless = True
     driver = Firefox(executable_path=path, options=option)
     driver.get(link)
-    driver.maximize_window()
+    driver.set_window_size(1920, 1080)
     kol = 0
     while kol < 10:
         try:
@@ -117,7 +121,7 @@ def parse(link, limit):
         kol += 1
     # До сюда
     kol = 0
-    while kol < 30:
+    while kol < 10:
         sleep(1)
         try:
             input_place = driver.find_elements(By.CLASS_NAME, "by-input__inner")[1]
@@ -129,7 +133,7 @@ def parse(link, limit):
             pass
         kol += 1
     kol = 0
-    while kol < 30:
+    while kol < 10:
         sleep(1)
         try:
             element = driver.find_elements(By.XPATH, "//table/tbody/tr")
@@ -143,7 +147,7 @@ def parse(link, limit):
     return pos
 
 
-if __name__ == "__main__":
-    print(parse("https://www.bybit.com/fiat/trade/otc/?actionType=0&token=BTC&fiat=RUB&paymentMethod=64", 10000))
+#if __name__ == "__main__":
+#    print(parse("https://www.bybit.com/fiat/trade/otc/?actionType=0&token=BTC&fiat=RUB&paymentMethod=64", 10000))
 
 

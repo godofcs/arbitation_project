@@ -1,7 +1,6 @@
-#!/usr/bin/env python3
-
-from parsers import parse_argument as pa
-from db_requests import db_session
+from src.parsers import parse_argument as pa
+from src.db_requests import db_session
+import schedule
 import threading
 from time import sleep
 import time
@@ -11,7 +10,7 @@ limits = {1: 1000, 2: 5000, 3: 10000, 4: 25000, 5: 50000, 6: 100000}
 
 
 def run_parser():
-    threads = [threading.Thread(target=foo, args=[i], daemon=True) for i in [1]] #limits.keys()]
+    threads = [threading.Thread(target=foo, args=[i], daemon=True) for i in limits.keys()]
     for thread in threads:
         print("Thread start")
         thread.start()

@@ -1,5 +1,6 @@
 from selenium.webdriver import Firefox
 from selenium.webdriver.common.by import By
+from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.firefox.options import Options
 from time import sleep
 
@@ -81,6 +82,7 @@ def parse(link, limit):
     option = Options()
     option.headless = True
     driver = Firefox(executable_path=path, options=option)
+    driver.set_window_size(1920, 1080)
     driver.get(link)
     kol = 0
     while kol < 10:

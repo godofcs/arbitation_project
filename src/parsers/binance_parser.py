@@ -1,7 +1,7 @@
-from selenium.webdriver import Chrome
+from selenium.webdriver import Firefox
 from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.firefox.service import Service
+from selenium.webdriver.firefox.options import Options
 from time import sleep
 
 
@@ -78,13 +78,12 @@ def get_glass_position(driver):
 
 
 def parse(link, limit):
-    path = Service("chromedriver.exe")
     option = Options()
     option.headless = True
-    driver = Chrome(service=path, options=option)
+    driver = Firefox(options=option)
     driver.get(link)
     kol = 0
-    while kol < 30:
+    while kol < 10:
         sleep(1)
         try:
             input_place = driver.find_element(By.ID, "C2Csearchamount_searchbox_amount")
@@ -100,7 +99,7 @@ def parse(link, limit):
             pass
         kol += 1
     kol = 0
-    while kol < 30:
+    while kol < 10:
         sleep(1)
         try:
             element = driver.find_element(By.CLASS_NAME, "css-1mf6m87")

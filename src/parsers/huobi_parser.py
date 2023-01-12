@@ -1,7 +1,7 @@
-from selenium.webdriver import Chrome
+from selenium.webdriver import Firefox
 from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.firefox.service import Service
+from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.common import keys
 from time import sleep
 
@@ -89,10 +89,9 @@ def get_glass_position(driver):
 
 
 def parse(link, limit, cur_payment):
-    path = Service("chromedriver.exe")
     option = Options()
     option.headless = True
-    driver = Chrome(service=path, options=option)
+    driver = Firefox(options=option)
     driver.get(link)
     # Это на всякий случай
     kol = 0

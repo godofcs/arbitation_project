@@ -78,38 +78,25 @@ def get_glass_position(driver):
 
 
 def parse(link, limit):
-    #path = Service(r"C:\Users\4739409\PycharmProjects\arbitation_project\src\parsers\geckodriver.exe")
-    #option = Options()
-    print(os.path.join("geckodriver.exe"))
     options = Options()
-    options.binary_location = os.path.join("geckodriver.exe")
-    driver = Firefox(executable_path=r"MozillaFirefox\firefox.exe", options=options)
-    #option.headless = True
-    #driver = Firefox(executable_path="geckodriver.exe")#, options=option)
+    options.headless = True
+    driver = Firefox(options=options)
     driver.get(link)
     driver.maximize_window()
     kol = 0
     while kol < 10:
         try:
             sleep(1)
-           # print(0)
             pre_buttons = driver.find_element(By.CLASS_NAME, "by-dialog__head")
-            #print(pre_buttons)
-           # print(1)
             buttons = pre_buttons.find_elements(By.CSS_SELECTOR, "span")
-           # print(2)
             for button in buttons:
-                #print(3)
                 button.click()
-            #print("Norm")
             break
         except Exception:
             pass
         kol += 1
-   # print("First window")
     # Это на всякий случай
     kol = 0
-    #driver.maximize_window()
     while kol < 2:
         sleep(1)
         try:
@@ -117,29 +104,23 @@ def parse(link, limit):
             buttons = pre_buttons.find_elements(By.CSS_SELECTOR, "i")
             for button in buttons:
                 button.click()
-            #print("Super cool")
             break
         except Exception:
             pass
         kol += 1
-    #print("Second window")
     kol = 0
     while kol < 5:
         sleep(1)
         try:
             button = driver.find_element(By.CLASS_NAME, "by-dialog__btn")
             button.click()
-            #print("cool")
             break
         except Exception:
             pass
         kol += 1
-    #print("Terd window")
     # До сюда
-    #driver.set_window_size(1000, 800)
     kol = 0
     while kol < 30:
-       # print(kol)
         sleep(1)
         try:
             input_place = driver.find_elements(By.CLASS_NAME, "by-input__inner")[1]
@@ -150,26 +131,22 @@ def parse(link, limit):
         except Exception:
             pass
         kol += 1
-    #print("Limit")
     kol = 0
     while kol < 30:
         sleep(1)
         try:
             element = driver.find_elements(By.XPATH, "//table/tbody/tr")
-            #print(len(element))
             if len(element) > 1:
                 break
         except Exception:
             pass
         kol += 1
-    #print("Table")
     pos = get_glass_position(driver)
     driver.close()
-    #print(pos)
     return pos
 
 
-if __name__ == "__main__":
-    print(parse("https://www.bybit.com/fiat/trade/otc/?actionType=0&token=BTC&fiat=RUB&paymentMethod=64", 10000))
+#if __name__ == "__main__":
+#    print(parse("https://www.bybit.com/fiat/trade/otc/?actionType=0&token=BTC&fiat=RUB&paymentMethod=64", 10000))
 
 

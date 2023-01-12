@@ -2,24 +2,22 @@ from selenium.webdriver import Firefox
 from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options
 from time import sleep
+import logging
 
 
 def get_name(el):
     name = el.find_element(By.CLASS_NAME, "font14")
-    #print(name.text)
     return name.text
 
 
 def get_col_orders(el):
     col = el.find_element(By.CLASS_NAME, "grey-label-half")
-    #print(int(col.text.split(":")[1].split("|")[0]))
     return int(col.text.split(":")[1].split("|")[0])
 
 
 def get_complete_percent(el):
     percent = el.find_element(By.CLASS_NAME, "grey-label-half")
     percent_str = percent.text.split(":")[1].split("|")[0]
-    #print(float(percent_str.split("%")[0]))
     return float(percent_str.split("%")[0])
 
 
@@ -27,8 +25,6 @@ def get_price(el):
     price = el.find_element(By.CLASS_NAME, "price")
     price = price.find_element(By.CSS_SELECTOR, "div")
     txt = price.text.split()[0]
-    #print(1, txt)
-    #print(float("".join(txt.split(","))))
     return float("".join(txt.split(",")))
 
 
@@ -46,7 +42,6 @@ def get_limit(el):
         else:
             break
     mas_lim = [float("".join(lim1.split(","))), float(lim2_txt)]
-    #print(mas_lim)
     return mas_lim
 
 
@@ -59,13 +54,13 @@ def get_available(el):
             txt = txt + el
         else:
             break
-    #print("".join(txt.split(",")))
+    # print("".join(txt.split(",")))
     return float("".join(txt.split(",")))
 
 
 def get_glass_position(driver):
     pos = []
-    #table = driver.find_element(By.CLASS_NAME, "trade-list__content")
+    # table = driver.find_element(By.CLASS_NAME, "trade-list__content")
     pos_element = driver.find_elements(By.CLASS_NAME, "otc-trade-list")
     kol = min(7, len(pos_element))
     for element in pos_element[:kol]:
@@ -79,31 +74,36 @@ def get_glass_position(driver):
                 "available": get_available(element)
             }
             pos += [data]
-        except Exception:
-            print(Exception)
-            pass
+            logging.debug("Append necessary position || huobi")
+        except Exception as err:
+            logging.warning("Necessary position do not append in glass || huobi")
     return pos
 
 
 def parse(link, limit, cur_payment):
+    logging.basicConfig(level=logging.DEBUG, filename="py_log.log", filemode="w",
+                        format="%(asctime)s %(levelname)s %(message)s")
     path = "geckodriver.exe"
     option = Options()
     option.headless = True
+    logging.debug("Start browser || huobi")
     driver = Firefox(executable_path=path, options=option)
     driver.set_window_size(1920, 1080)
     driver.get(link)
+    logging.debug("Successfully start browser || bybit")
     # Это на всякий случай
     kol = 0
     while kol < 15:
         sleep(1)
         try:
-            #тут возможно нужно другой класс поставить если работать не будет
+            # тут возможно нужно другой класс поставить если работать не будет
             button = driver.find_element(By.CLASS_NAME, "close-box")
             if button:
                 button.click()
+                logging.debug("Click necessary button || huobi")
                 break
-        except Exception:
-            pass
+        except Exception as err:
+            logging.warning("There is no necessary button || huobi")
         kol += 1
     kol = 0
     while kol < 15:
@@ -115,9 +115,10 @@ def parse(link, limit, cur_payment):
                 input_place.send_keys(f"{limit}")
                 button = payment.find_element(By.CLASS_NAME, "submit-in")
                 button.click()
+                logging.debug("Send key || huobi")
                 break
-        except Exception:
-            pass
+        except Exception as err:
+            logging.warning("Do not send key || huobi")
         kol += 1
     kol = 0
     while kol < 15:
@@ -135,9 +136,10 @@ def parse(link, limit, cur_payment):
                 sleep(0.5)
                 but = pre_input.find_element(By.CLASS_NAME, 'multiSelect-payments-confirm')
                 but.click()
+                logging.debug("Send second key || huobi")
                 break
-        except Exception:
-            pass
+        except Exception as err:
+            logging.warning("Do not send second key || huobi")
         kol += 1
     kol = 0
     while kol < 15:
@@ -145,16 +147,14 @@ def parse(link, limit, cur_payment):
         try:
             element = driver.find_elements(By.CLASS_NAME, "otc-trade-list")
             if len(element) > 1:
+                logging.debug("Get necessary position || huobi")
                 break
-        except Exception:
-            pass
+        except Exception as err:
+            logging.warning("There is no necessary position || huobi")
         kol += 1
     pos = get_glass_position(driver)
     driver.close()
     return pos
 
-
-#if __name__ == "__main__":
+# if __name__ == "__main__":
 #    print(parse("https://www.huobi.com/ru-ru/fiat-crypto/trade/buy-eth-rub/", 10000, "Тинькофф"))
-
-

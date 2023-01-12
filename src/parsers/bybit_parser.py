@@ -2,33 +2,29 @@ from selenium.webdriver import Firefox
 from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options
 from time import sleep
+import logging
 
 
 def get_name(el):
     name = el.find_element(By.CLASS_NAME, "advertiser-name")
-    #print(name.text)
     return name.text
 
 
 def get_col_orders(el):
     col_el = el.find_element(By.CLASS_NAME, "advertiser-info")
     col = col_el.find_element(By.CSS_SELECTOR, "span")
-    #print(int(col.text.split()[0]))
     return int(col.text.split()[0])
 
 
 def get_complete_percent(el):
     percent = el.find_element(By.CLASS_NAME, "execute-rate")
     percent_str = percent.text
-    #print(float(percent_str.split("%")[0]))
     return float(percent_str.split("%")[0])
 
 
 def get_price(el):
     price = el.find_element(By.CLASS_NAME, "price-amount")
     txt = price.text
-    #print(1, txt)
-    #print(float("".join(txt.split(","))))
     return float("".join(txt.split(",")))
 
 
@@ -39,24 +35,20 @@ def get_limit(el):
         lim = el.split()[0]
         lim = "".join(lim.split(","))
         mas_lim += [float(lim)]
-    #print(mas_lim)
     return mas_lim
 
 
 def get_available(el):
     price = el.find_elements(By.CLASS_NAME, "ql-value")
     txt = price[0].text.split()[0]
-    #print("".join(txt.split(",")))
     return float("".join(txt.split(",")))
 
 
 def get_glass_position(driver):
     pos = []
-    #table = driver.find_element(By.CLASS_NAME, "trade-list__content")
     pos_element = driver.find_elements(By.XPATH, "//table/tbody/tr")
     kol = min(7, len(pos_element))
     for element in pos_element[:kol]:
-        #print(element)
         try:
             data = {
                 "name": get_name(element),
@@ -67,18 +59,23 @@ def get_glass_position(driver):
                 "available": get_available(element)
             }
             pos += [data]
-        except Exception:
-            pass
+            logging.debug("Append necessary position || bybit")
+        except Exception as err:
+            logging.warning("Necessary position do not append in glass || bybit")
     return pos
 
 
 def parse(link, limit):
+    logging.basicConfig(level=logging.DEBUG, filename="py_log.log", filemode="w",
+                        format="%(asctime)s %(levelname)s %(message)s")
     path = "geckodriver.exe"
     option = Options()
     option.headless = True
+    logging.debug("Start browser || bybit")
     driver = Firefox(executable_path=path, options=option)
     driver.get(link)
     driver.set_window_size(1920, 1080)
+    logging.debug("Successfully start browser || bybit")
     kol = 0
     while kol < 10:
         try:
@@ -87,9 +84,10 @@ def parse(link, limit):
             buttons = pre_buttons.find_elements(By.CSS_SELECTOR, "span")
             for button in buttons:
                 button.click()
+            logging.debug("Click necessary button || bybit")
             break
-        except Exception:
-            pass
+        except Exception as err:
+            logging.warning("There is no necessary button || bybit")
         kol += 1
     # Это на всякий случай
     kol = 0
@@ -100,9 +98,10 @@ def parse(link, limit):
             buttons = pre_buttons.find_elements(By.CSS_SELECTOR, "i")
             for button in buttons:
                 button.click()
+            logging.debug("Click second necessary button || bybit")
             break
-        except Exception:
-            pass
+        except Exception as err:
+            logging.warning("There is no second necessary button || bybit")
         kol += 1
     kol = 0
     while kol < 5:
@@ -110,9 +109,10 @@ def parse(link, limit):
         try:
             button = driver.find_element(By.CLASS_NAME, "by-dialog__btn")
             button.click()
+            logging.debug("Click third necessary button || bybit")
             break
-        except Exception:
-            pass
+        except Exception as err:
+            logging.warning("There is no third necessary button || bybit")
         kol += 1
     # До сюда
     kol = 0
@@ -123,9 +123,10 @@ def parse(link, limit):
             if input_place:
                 input_place.click()
                 input_place.send_keys(f"{limit}")
+                logging.debug("Send key || bybit")
                 break
-        except Exception:
-            pass
+        except Exception as err:
+            logging.warning("Do not send key || bybit")
         kol += 1
     kol = 0
     while kol < 10:
@@ -133,9 +134,10 @@ def parse(link, limit):
         try:
             element = driver.find_elements(By.XPATH, "//table/tbody/tr")
             if len(element) > 1:
+                logging.debug("Get necessary position || bybit")
                 break
-        except Exception:
-            pass
+        except Exception as err:
+            logging.warning("There is no necessary position || bybit")
         kol += 1
     pos = get_glass_position(driver)
     driver.close()

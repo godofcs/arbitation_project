@@ -5,6 +5,8 @@ from parsers.huobi_parser import parse as huobi_parse
 from db_requests import db_session
 from db_requests.offers import Offer
 from time import sleep
+import logging
+
 
 # db_session.global_init("C:/Users/4739409/PycharmProjects/arbitation_project/bd/base.sqlite")
 
@@ -88,11 +90,6 @@ def make_mas_links(cur_fiat, cur_market, cur_crypto, cur_payment):
                             mas_links.append([link, [market, crypto, fiat, payment, sell_buy]])
                         else:
                             mas_links.append([link, [market, fiat, crypto, payment, sell_buy]])
-    print(len(mas_links))
-    k = 1
-    for i in mas_links:
-        print(k, i)
-        k += 1
     return mas_links
 
 
@@ -119,9 +116,12 @@ def add_to_database(new_offer, limit_id, taker_commission, maker_commission, ses
 
 
 def parse_argument(limit_id, fiat_mas, market_mas, crypto_mas, payment_mas):
+    logging.basicConfig(level=logging.DEBUG, filename="py_log.log", filemode="w",
+                        format="%(asctime)s %(levelname)s %(message)s")
     limit = get_limit(limit_id)
     mas_links = make_mas_links(fiat_mas, market_mas, crypto_mas, payment_mas)
     mas_add_to_data_base = []
+    logging.debug("Generate links")
     k = 1
     for link in mas_links:
         if "binance" in link[0]:
@@ -129,45 +129,54 @@ def parse_argument(limit_id, fiat_mas, market_mas, crypto_mas, payment_mas):
                 try:
                     glass = binance_parse(link[0], limit)
                     new_offer = [analyse_glass(glass)] + link[1]
-                    print(k, "binance", new_offer)
+                    logging.debug(f"{k} binance {new_offer}")
                     if new_offer[5] == "buy":
                         mas_add_to_data_base.append([new_offer, limit_id, 0.0, 0.1])
                     else:
                         mas_add_to_data_base.append([new_offer, limit_id, 0.0, 100])
                     break
-                except Exception:
+                except Exception as err:
+                    logging.error(f"{err}")
+                    logging.debug("Just, I am so tired on binance")
                     sleep(10)
-                    print("Just, I am so tired on binance")
         elif "bybit" in link[0]:
             for i in range(5):
                 try:
                     glass = bybit_parse(link[0], limit)
                     new_offer = [analyse_glass(glass)] + link[1]
-                    print(k, "bybit", new_offer)
+                    logging.debug(f"{k} bybit {new_offer}")
                     mas_add_to_data_base.append([new_offer, limit_id, 0.0, 0.0])
                     break
-                except Exception:
+                except Exception as err:
+                    logging.error(f"{err}")
+                    logging.debug("Just, I am so tired on bybit")
                     sleep(10)
-                    print("Just, I am so tired on bybit")
                     pass
         elif "huobi" in link[0]:
             for i in range(5):
                 try:
                     glass = huobi_parse(link[0], limit, all_payment[link[1][3]]["huobi"])
                     new_offer = [analyse_glass(glass)] + link[1]
-                    print(k, "huobi", new_offer)
+                    logging.debug(f"{k} huobi {new_offer}")
                     mas_add_to_data_base.append([new_offer, limit_id, 0.0, 0.0])
                     break
-                except Exception:
+                except Exception as err:
+                    logging.error(f"{err}")
+                    logging.debug("Just, I am so tired on huobi")
                     sleep(10)
-                    print("Just, I am so tired on huobi")
                     pass
         k += 1
-    sessions = db_session.create_session()
-    for el in mas_add_to_data_base:
-        add_to_database(el[0], el[1], el[2], el[3], sessions)
-    sessions.commit()
-    sessions.close()
+    try:
+        logging.debug("Start session")
+        sessions = db_session.create_session()
+        for el in mas_add_to_data_base:
+            add_to_database(el[0], el[1], el[2], el[3], sessions)
+        sessions.commit()
+        sessions.close()
+        logging.debug("End session")
+    except Exception as err:
+        logging.error(f"{err}")
+        logging.warning("Session do not end successfully")
 
     # TODO сделать нормальный выбор по параметрам запросу
 

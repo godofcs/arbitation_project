@@ -9,7 +9,7 @@ def Counter(data: list):
         def __init__(self, big_offer):
             self.receive_coin = big_offer.receive_coin
             self.init_coin = big_offer.init_coin
-            self.market = big_offer.market
+            self.market = col_ordersbig_offer.market
             self.payment = big_offer.payment
             self.sell_buy = big_offer.sell_buy
             self.price = float(big_offer.price)
@@ -98,7 +98,7 @@ def Counter(data: list):
         cur_offer = prev[pos]
         if cur_offer.init_coin != cur_offer.receive_coin:
             ans += "Buy " if cur_offer.sell_buy else "Sell "
-            ans += "Taker " if cur_offer.maker_commission == 100 else "Maker "
+            ans += "Taker " if cur_offer.maker_commission > cur_offer.taker_commission else "Maker "
             ans += cur_offer.market + " " + cur_offer.init_coin + " " + cur_offer.receive_coin + " "
             ans += cur_offer.payment + " -> "
         else:

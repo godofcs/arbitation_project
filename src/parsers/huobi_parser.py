@@ -54,7 +54,6 @@ def get_available(el):
             txt = txt + el
         else:
             break
-    # print("".join(txt.split(",")))
     return float("".join(txt.split(",")))
 
 

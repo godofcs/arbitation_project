@@ -38,5 +38,4 @@ def analyse_users(glass):
 def analyse_glass(glass):
     reliable_users = analyse_users(glass)
     average_price = get_average_price(reliable_users)
-    #print(average_price)
     return average_price

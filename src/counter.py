@@ -9,12 +9,12 @@ def Counter(data: list):
         def __init__(self, big_offer):
             self.receive_coin = big_offer.receive_coin
             self.init_coin = big_offer.init_coin
-            self.market = col_ordersbig_offer.market
+            self.market = big_offer.market
             self.payment = big_offer.payment
             self.sell_buy = big_offer.sell_buy
             self.price = float(big_offer.price)
-            self.maker_commission = float(big_offer.maker_commission)
-            self.taker_commission = float(big_offer.taker_commission)
+            self.maker_commission = big_offer.maker_commission
+            self.taker_commission = big_offer.taker_commission
 
     _fiat = {"RUB", "USD", "EUR", "CNY", "GBP"}
     _crypto = {"USDT": 1, "BTC": 2, "BUSD": 3, "BNB": 4, "ETH": 5}
@@ -53,7 +53,8 @@ def Counter(data: list):
             gr[0].append(lite_offer)
         elif lite_offer.receive_coin in _crypto.keys():
             gr[PosByOffer(lite_offer, "receive")].append(lite_offer)
-        # TODO Вот тут можно прикрутить лог, если пришла непонятная моментка
+        else:
+            print(lite_offer.init_coin, lite_offer.receive_coin, lite_offer.market, "<-INVALID COIN", offer.id)
     for i in range(1, len(_crypto) + 1):
         for j in range(2, len(_market) + 1):
             for k in range(1, j):

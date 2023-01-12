@@ -1,9 +1,7 @@
-from src.parsers import parse_argument as pa
-from src.db_requests import db_session
-import schedule
+from parsers import parse_argument as pa
+from db_requests import db_session
 import threading
 from time import sleep
-import time
 
 
 limits = {1: 1000, 2: 5000, 3: 10000, 4: 25000, 5: 50000, 6: 100000}
@@ -29,12 +27,8 @@ def foo(limit_id):
                       ["BTC", "USDT", "ETH", "BUSD", "BNB"], ["Tinkoff", "Sberbank", "Raiffeisenbank"])
 
 
-#schedule.every(10).seconds.do(job)
-
 if __name__ == "__main__":
     db_session.global_init()
-    #schedule.every(30).minutes.do(job)
-    #schedule.every().minutes.do(job)
     while True:
         run_parser()
         sleep(600)

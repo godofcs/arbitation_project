@@ -1,11 +1,7 @@
 from selenium.webdriver import Firefox
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common import keys
-from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.firefox.options import Options
-from selenium_stealth import stealth
 from time import sleep
-import os
 
 
 def get_name(el):
@@ -72,7 +68,6 @@ def get_glass_position(driver):
             }
             pos += [data]
         except Exception:
-            print(Exception)
             pass
     return pos
 

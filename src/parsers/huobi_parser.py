@@ -1,8 +1,6 @@
 from selenium.webdriver import Firefox
 from selenium.webdriver.common.by import By
-from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.firefox.options import Options
-from selenium.webdriver.common import keys
 from time import sleep
 
 
@@ -99,6 +97,7 @@ def parse(link, limit, cur_payment):
     while kol < 15:
         sleep(1)
         try:
+            #тут возможно нужно другой класс поставить если работать не будет
             button = driver.find_element(By.CLASS_NAME, "close-box")
             if button:
                 button.click()

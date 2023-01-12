@@ -22,9 +22,19 @@ if __name__ == "__main__":
 
     def callback(ch, method, properties, body):
         requests_body = json.loads(body)
-        all_offers = get_offers.get_offers(["RUB"], ["BTC", "ETH", "USDT", "BUSD", "BNB"], [2],
-                                       ["binance", "bybit", "huobi"], ["Tinkoff", "Sberbank", "Raiffeisenbank"])
+        # [message.chat.id,user_currency,user_limit,user_bank,user_stock_markets]
+        user_currency = requests_body[1]
+        user_limit = requests_body[2]
+        user_bank = requests_body[3]
+        user_stock = requests_body[4]
+        all_offers = get_offers.get_offers(user_currency, ["BTC", "USDT", "ETH", "BUSD", "BNB"], [2],
+                                           user_stock, user_bank)
         message = "ТО ЧТО ОТПРАВЛЕТЕ В БОТА ОБРАТНО"
+
+        for one_limit_id in all_offers:
+            message = message + f"Это связки для следующих значений лимита: {one_limit_id[0]} \n"
+            for offers in one_limit_id[1:]:
+                message = message + counter.Counter(offers) + "\n"
 
         channel.basic_publish(exchange='',
                               routing_key='from_parser_to_bot',
@@ -45,8 +55,3 @@ if __name__ == "__main__":
         traceback.print_exc(file=sys.stdout)
 
     channel.close()
-
-    for one_limit_id in all_offers:
-        print(f"Это связки для следующих значений лимита: {one_limit_id[0]}")
-        for offers in one_limit_id[1:]:
-            print(counter.Counter(offers))

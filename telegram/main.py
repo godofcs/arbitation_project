@@ -6,9 +6,9 @@ import json
 
 API_KEY = "5630556319:AAHEgv_ykF1L5EADrJnzte6DTy9eyJg8nbE"
 
-ALL_MARKETS = ['Binance', 'ByBit', 'Okx', 'Huobi']
+ALL_MARKETS = ['Binance', 'ByBit', 'Huobi']
 ALL_CURRENCY = ['RUB', 'USD', 'EUR', 'CNY', 'GBP']
-ALL_BANKS = ['Raiffaizen', 'Sber', 'Tinkoff']
+ALL_BANKS = ['Raiffeisenbank', 'Sberbank', 'Tinkoff"']
 
 START_OVER_BUTTON = "НАЧАТЬ СНАЧАЛА"
 START_BUTTON = "НАЧАТЬ ТРЕЙДИТЬ"

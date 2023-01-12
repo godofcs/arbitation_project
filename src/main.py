@@ -43,7 +43,7 @@ if __name__ == "__main__":
 
         channel.basic_publish(exchange='',
                               routing_key='from_parser_to_bot',
-                              body=[chat_id, message],
+                              body=json.dumps([chat_id, message]),
                               properties=pika.BasicProperties(
                                   delivery_mode=2
                               ))

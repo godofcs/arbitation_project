@@ -147,7 +147,7 @@ def stock_markets(message):
         try:
             int_limit = int(message.text)
         except ValueError:
-            bot.send_message(message.chat.id, "Введи число, а не цифру")
+            bot.send_message(message.chat.id, "Введите число пожалуйста")
             message.text = user_currency
             limit(message)
             return

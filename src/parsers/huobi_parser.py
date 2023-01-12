@@ -1,8 +1,6 @@
 from selenium.webdriver import Firefox
 from selenium.webdriver.common.by import By
-from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.firefox.options import Options
-from selenium.webdriver.common import keys
 from time import sleep
 
 
@@ -71,7 +69,6 @@ def get_glass_position(driver):
     pos_element = driver.find_elements(By.CLASS_NAME, "otc-trade-list")
     kol = min(7, len(pos_element))
     for element in pos_element[:kol]:
-        #print(element)
         try:
             data = {
                 "name": get_name(element),
@@ -89,18 +86,21 @@ def get_glass_position(driver):
 
 
 def parse(link, limit, cur_payment):
+    path = "geckodriver.exe"
     option = Options()
     option.headless = True
-    driver = Firefox(options=option)
+    driver = Firefox(executable_path=path, options=option)
     driver.get(link)
     # Это на всякий случай
     kol = 0
     while kol < 30:
         sleep(1)
         try:
+            print(kol, "huobi try")
             button = driver.find_element(By.CLASS_NAME, "video-close")
             if button:
                 button.click()
+                print("huobi cool")
                 break
         except Exception:
             pass
@@ -109,12 +109,14 @@ def parse(link, limit, cur_payment):
     while kol < 30:
         sleep(1)
         try:
+            print(kol, "huobi seecond try")
             payment = driver.find_element(By.CLASS_NAME, "search-amount-container")
             if payment:
                 input_place = payment.find_element(By.CLASS_NAME, "ivu-input")
                 input_place.send_keys(f"{limit}")
                 button = payment.find_element(By.CLASS_NAME, "submit-in")
                 button.click()
+                print("huobi second cool")
                 break
         except Exception:
             pass
@@ -123,18 +125,23 @@ def parse(link, limit, cur_payment):
     while kol < 30:
         sleep(1)
         try:
+            print("huobi last try")
             pre = driver.find_elements(By.CLASS_NAME, "pay-search-container")[2]
             if pre:
+                print(1)
                 pre.click()
                 pre_input = driver.find_element(By.CLASS_NAME, "pay-method-haveHistory")
                 input = pre_input.find_element(By.CLASS_NAME, "ivu-input-default")
                 input.send_keys(f"{cur_payment}")
+                print(2)
                 sleep(0.5)
                 but = pre_input.find_element(By.CLASS_NAME, 'cursor')
                 but.click()
+                print(3)
                 sleep(0.5)
                 but = pre_input.find_element(By.CLASS_NAME, 'multiSelect-payments-confirm')
                 but.click()
+                print(4)
                 break
         except Exception:
             pass
@@ -143,9 +150,10 @@ def parse(link, limit, cur_payment):
     while kol < 30:
         sleep(1)
         try:
+            print("last attempt")
             element = driver.find_elements(By.CLASS_NAME, "otc-trade-list")
-            #print(len(element))
             if len(element) > 1:
+                print(len(element))
                 break
         except Exception:
             pass

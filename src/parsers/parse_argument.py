@@ -1,11 +1,10 @@
-from src.parsers.binance_parser import parse as binance_parse
-from src.parsers.bybit_parser import parse as bybit_parse
-from src.analyse import analyse_glass
-from src.parsers.huobi_parser import parse as huobi_parse
-from src.db_requests import db_session
-from src.db_requests.offers import Offer
+from parsers.binance_parser import parse as binance_parse
+from parsers.bybit_parser import parse as bybit_parse
+from analyse import analyse_glass
+from parsers.huobi_parser import parse as huobi_parse
+from db_requests import db_session
+from db_requests.offers import Offer
 from time import sleep
-from pyvirtualdisplay import Display
 
 # db_session.global_init("C:/Users/4739409/PycharmProjects/arbitation_project/bd/base.sqlite")
 
@@ -97,8 +96,8 @@ def make_mas_links(cur_fiat, cur_market, cur_crypto, cur_payment):
     return mas_links
 
 
-def add_to_database(new_offer, limit_id, taker_commission, maker_commission):
-    sessions = db_session.create_session()
+def add_to_database(new_offer, limit_id, taker_commission, maker_commission, sessions):
+#    sessions = db_session.create_session()
     offer = sessions.query(Offer).filter(Offer.market == new_offer[1],
                                          Offer.init_coin == new_offer[2],
                                          Offer.receive_coin == new_offer[3],
@@ -117,8 +116,6 @@ def add_to_database(new_offer, limit_id, taker_commission, maker_commission):
     offer.taker_commission = taker_commission
     offer.maker_commission = maker_commission
     sessions.merge(offer)
-    sessions.commit()
-    sessions.close()
 
 
 def parse_argument(limit_id, fiat_mas, market_mas, crypto_mas, payment_mas):
@@ -141,7 +138,6 @@ def parse_argument(limit_id, fiat_mas, market_mas, crypto_mas, payment_mas):
                 except Exception:
                     sleep(10)
                     print("Just, I am so tired on binance")
-                    pass
         elif "bybit" in link[0]:
             for i in range(5):
                 try:
@@ -167,7 +163,11 @@ def parse_argument(limit_id, fiat_mas, market_mas, crypto_mas, payment_mas):
                     print("Just, I am so tired on huobi")
                     pass
         k += 1
+    sessions = db_session.create_session()
     for el in mas_add_to_data_base:
-        add_to_database(el[0], el[1], el[2], el[3])
+        add_to_database(el[0], el[1], el[2], el[3], sessions)
+    sessions.commit()
+    sessions.close()
+
     # TODO сделать нормальный выбор по параметрам запросу
 

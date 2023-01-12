@@ -1,11 +1,7 @@
 from selenium.webdriver import Firefox
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common import keys
-from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.firefox.options import Options
-from selenium_stealth import stealth
 from time import sleep
-import os
 
 
 def get_name(el):
@@ -78,9 +74,10 @@ def get_glass_position(driver):
 
 
 def parse(link, limit):
-    options = Options()
-    options.headless = True
-    driver = Firefox(options=options)
+    path = "geckodriver.exe"
+    option = Options()
+    option.headless = True
+    driver = Firefox(executable_path=path, options=option)
     driver.get(link)
     driver.maximize_window()
     kol = 0
@@ -146,7 +143,7 @@ def parse(link, limit):
     return pos
 
 
-#if __name__ == "__main__":
-#    print(parse("https://www.bybit.com/fiat/trade/otc/?actionType=0&token=BTC&fiat=RUB&paymentMethod=64", 10000))
+if __name__ == "__main__":
+    print(parse("https://www.bybit.com/fiat/trade/otc/?actionType=0&token=BTC&fiat=RUB&paymentMethod=64", 10000))
 
 

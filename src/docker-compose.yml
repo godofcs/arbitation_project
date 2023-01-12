@@ -1,31 +1,12 @@
 version: "3.7"
 services:
-  firefox:
-    image: lscr.io/linuxserver/firefox:latest
-    container_name: firefox
-    security_opt:
-      - seccomp:unconfined #optional
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Europe/Moscow
-    volumes:
-      - /path/to/config:/config
-    ports:
-      - "3000:3000"
-    shm_size: "2gb"
-    restart: unless-stopped
-    networks:
-      - default
-
   parser:
     restart: unless-stopped
     build:
       context: .
       dockerfile: Dockerfile
+    ports:
+        - 4000:4000
+    privileged: true
     command:
-      - python3 parser_launch.py
-    depends_on:
-      - firefox
-    networks:
-      - default
+      python3.9 parser_launch.py

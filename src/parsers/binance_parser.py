@@ -1,6 +1,5 @@
 from selenium.webdriver import Firefox
 from selenium.webdriver.common.by import By
-from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.firefox.options import Options
 from time import sleep
 
@@ -78,9 +77,10 @@ def get_glass_position(driver):
 
 
 def parse(link, limit):
+    path = "geckodriver.exe"
     option = Options()
     option.headless = True
-    driver = Firefox(options=option)
+    driver = Firefox(executable_path=path, options=option)
     driver.get(link)
     kol = 0
     while kol < 10:

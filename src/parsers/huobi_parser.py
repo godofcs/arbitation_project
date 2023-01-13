@@ -5,30 +5,30 @@ from time import sleep
 import logging
 
 
-def get_name(el):
+def get_name(el):  # Эта функция для получения имени мейкера
     name = el.find_element(By.CLASS_NAME, "font14")
     return name.text
 
 
-def get_col_orders(el):
+def get_col_orders(el):  # Эта функция для получения количества выполненных ордеров у мейкера
     col = el.find_element(By.CLASS_NAME, "grey-label-half")
     return int(col.text.split(":")[1].split("|")[0])
 
 
-def get_complete_percent(el):
+def get_complete_percent(el):  # Эта функция для получения процента выполненных ордеров у мейкера
     percent = el.find_element(By.CLASS_NAME, "grey-label-half")
     percent_str = percent.text.split(":")[1].split("|")[0]
     return float(percent_str.split("%")[0])
 
 
-def get_price(el):
+def get_price(el):  # Эта функция для получения цены оффера мейкера
     price = el.find_element(By.CLASS_NAME, "price")
     price = price.find_element(By.CSS_SELECTOR, "div")
     txt = price.text.split()[0]
     return float("".join(txt.split(",")))
 
 
-def get_limit(el):
+def get_limit(el):  # Эта функция для полученя лимитов, в которых торгует мейкер
     pre_limit = el.find_element(By.CLASS_NAME, "limit")
     limit = pre_limit.find_elements(By.CSS_SELECTOR, "span")
     lim1 = limit[0].text
@@ -45,7 +45,7 @@ def get_limit(el):
     return mas_lim
 
 
-def get_available(el):
+def get_available(el):  # Эта функция для получения доступного количества крипты
     price = el.find_element(By.CLASS_NAME, "stock")
     pre_txt = price.text
     txt = pre_txt.split(".")[0] + "."
@@ -57,7 +57,7 @@ def get_available(el):
     return float("".join(txt.split(",")))
 
 
-def get_glass_position(driver):
+def get_glass_position(driver):  # Эта функция для полученя всех позиций из стакана
     pos = []
     # table = driver.find_element(By.CLASS_NAME, "trade-list__content")
     pos_element = driver.find_elements(By.CLASS_NAME, "otc-trade-list")
@@ -79,6 +79,7 @@ def get_glass_position(driver):
     return pos
 
 
+# Эта функция выполняет все необходимые действия на странице, чтобы дальше можно было работать с нужным стаканом
 def parse(link, limit, cur_payment):
     logging.basicConfig(level=logging.DEBUG, filename="py_log.log", filemode="w",
                         format="%(asctime)s %(levelname)s %(message)s")
@@ -154,6 +155,3 @@ def parse(link, limit, cur_payment):
     pos = get_glass_position(driver)
     driver.close()
     return pos
-
-# if __name__ == "__main__":
-#    print(parse("https://www.huobi.com/ru-ru/fiat-crypto/trade/buy-eth-rub/", 10000, "Тинькофф"))

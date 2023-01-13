@@ -3,8 +3,6 @@ from db_requests.offers import Offer
 
 
 limits = {1: 1000, 2: 5000, 3: 10000, 4: 25000, 5: 50000, 6: 100000}
-rev_limits = {1000: 1, 5000: 2, 10000: 3, 25000: 4, 50000: 5, 100000: 6}
-
 
 def get_limits_list(limit):
     limit = int(limit)
@@ -21,6 +19,7 @@ def get_limits_list(limit):
     return cur_limit_id
 
 
+# Эта функция отвечает за выбор нужных пользователю офферов
 def get_offers(cur_fiat: list, cur_cripto: list, cur_limit_id: list, cur_market: list, cur_payment: list):
     sessions = db_session.create_session()
     all_offers = []

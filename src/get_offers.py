@@ -2,9 +2,10 @@ from src.db_requests import db_session
 from src.db_requests.offers import Offer
 
 
-limits = {1: 1000, 2: 5000, 3: 10000, 4: 25000, 5: 50000, 6: 100000, 7: 500000}
+limits = {1: 1000, 2: 5000, 3: 10000, 4: 25000, 5: 50000, 6: 100000}
 
 
+# Эта функция отвечает за выбор нужных пользователю офферов
 def get_offers(cur_fiat: list, cur_cripto: list, cur_limit_id: list, cur_market: list, cur_payment: list):
     sessions = db_session.create_session()
     all_offers = []

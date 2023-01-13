@@ -1,21 +1,42 @@
 def Counter(data: list):
+    """
+    Поиск релазиован с помощью алгоритма поиска наибольшего пути
+    в ациклическом графе. Для этого нам нужно транспонировать исходный граф,
+    а потом, с помощью методом динамического программирования, найти наиболее
+    большой путь. Мы не будем явно транспонировать граф, мы изначально его зададим
+    в транспонированном виде.
+    """
+
     N = 71
     INF = 100000000
 
-    class LiteOffer:
+    class coin:
+        def __init__(self, type, name):
+            self.type_of_coin = type
+            self.name = name
+
+
+
+
+    class lite_offer:
         """
         Оффер, подобный классу Offer.py, являющийся сжатой его версией.
         Нужен для того, чтобы нормально инициализировать офферы в нашем графе.
         """
         def __init__(self, big_offer):
-            self.receive_coin = big_offer.receive_coin
-            self.init_coin = big_offer.init_coin
+            self.receive_coin = coin("receive", big_offer.receive_coin)
+            self.init_coin = coin("init", big_offer.receive_coin)
             self.market = big_offer.market
             self.payment = big_offer.payment
             self.sell_buy = big_offer.sell_buy
-            self.price = float(big_offer.price)
+            self.price = big_offer.price
             self.maker_commission = big_offer.maker_commission
             self.taker_commission = big_offer.taker_commission
+        def PosByOffer(self, type_of_offer):
+            offer_name = offer.receive_coin if type_of_offer == "receive" else offer.init_coin
+            if offer_name.upper() in _fiat:
+                return N - 1 if type_of_offer == "init" else 0
+            return _crypto[offer_name] * 10 + _market[offer.market]
 
     _fiat = {"RUB", "USD", "EUR", "CNY", "GBP"}
     _crypto = {"USDT": 1, "BTC": 2, "BUSD": 3, "BNB": 4, "ETH": 5}
@@ -23,11 +44,7 @@ def Counter(data: list):
     _deC = {1: "USDT", 2: "BTC", 3: "BUSD", 4: "BNB", 5: "ETH"}
     _deM = {1: "binance", 2: "bybit", 3: "huobi"}
 
-    def PosByOffer(offer: LiteOffer, type_of_offer: str):
-        offer_name = offer.receive_coin if type_of_offer == "receive" else offer.init_coin
-        if offer_name.upper() in _fiat:
-            return N - 1 if type_of_offer == "init" else 0
-        return _crypto[offer_name] * 10 + _market[offer.market]
+
 
     def Commission(offer_name):
         # комса указана в рублях
@@ -38,34 +55,28 @@ def Counter(data: list):
         else:
             return 0
 
-    """
-    Поиск релазиован с помощью алгоритма поиска наибольшего пути
-    в ациклическом графе. Для этого нам нужно транспонировать исходный граф,
-    а потом, с помощью методом динамического программирования, найти наиболее
-    большой путь. Мы не будем явно транспонировать граф, мы изначально его зададим
-    в транспонированном виде.
-    """
     if len(data) == 0:
         return "Invalid input"
+
     gr = [[] for i in range(N)]
     for offer in data:
-        lite_offer = LiteOffer(offer)
+        lite_offer = lite_offer(offer)
         if lite_offer.receive_coin.upper() in _fiat:
             gr[0].append(lite_offer)
         elif lite_offer.receive_coin in _crypto.keys():
-            gr[PosByOffer(lite_offer, "receive")].append(lite_offer)
+            gr[lite_offer.PosByOffer("receive")].append(lite_offer)
         else:
             print(lite_offer.init_coin, lite_offer.receive_coin, lite_offer.market, "<-INVALID COIN", offer.id)
     for i in range(1, len(_crypto) + 1):
         for j in range(2, len(_market) + 1):
             for k in range(1, j):
-                modificate_offer = LiteOffer(data[0])
+                modificate_offer = lite_offer(data[0])
                 modificate_offer.init_coin, modificate_offer.receive_coin, modificate_offer.price, modificate_offer.market = \
                     _deC[i], _deC[i], Commission(_deC[i]), _deM[k]
-                offer_between_markets_1 = LiteOffer(modificate_offer)
+                offer_between_markets_1 = lite_offer(modificate_offer)
                 gr[i * 10 + j].append(offer_between_markets_1)
                 modificate_offer.market = _deM[j]
-                offer_between_markets_2 = LiteOffer(modificate_offer)
+                offer_between_markets_2 = lite_offer(modificate_offer)
                 gr[i * 10 + k].append(offer_between_markets_2)
                 # здесь в поле маркет указано, куда мы переводим монеты
     prev = [None for i in range(N)]

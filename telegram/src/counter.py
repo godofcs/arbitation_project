@@ -2,6 +2,8 @@ def Counter(data: list):
     N = 71
     INF = 100000000
 
+    print(2222222222222222222222222)
+
     class LiteOffer:
         def __init__(self, big_offer):
             self.receive_coin = big_offer.receive_coin
@@ -33,6 +35,8 @@ def Counter(data: list):
             return 1.0
         else:
             return 0
+
+    print(3333333333333333333333)
 
     """
     Поиск релазиован с помощью алгоритма поиска наибольшего пути
@@ -92,16 +96,20 @@ def Counter(data: list):
     dfs(0, -1)
     ans = str()
     pos = N - 1
-    while pos != 0:
-        cur_offer = prev[pos]
-        if cur_offer.init_coin != cur_offer.receive_coin:
-            ans += "Buy " if cur_offer.sell_buy else "Sell "
-            ans += "Taker " if cur_offer.maker_commission > cur_offer.taker_commission else "Maker "
-            ans += cur_offer.market + " " + cur_offer.init_coin + " " + cur_offer.receive_coin + " "
-            ans += cur_offer.payment + " -> "
-        else:
-            ans += cur_offer.init_coin + " Transfer to next market -> "
-        pos = PosByOffer(cur_offer, "receive")
+    print("Go to message")
+    for i in range(3):
+        try:
+            cur_offer = prev[pos]
+            if cur_offer.init_coin != cur_offer.receive_coin:
+                ans += "Buy " if cur_offer.sell_buy else "Sell "
+                ans += "Taker " if cur_offer.maker_commission > cur_offer.taker_commission else "Maker "
+                ans += cur_offer.market + " " + cur_offer.init_coin + " " + cur_offer.receive_coin + " "
+                ans += cur_offer.payment + " -> "
+            else:
+                ans += cur_offer.init_coin + " Transfer to next market -> "
+            pos = PosByOffer(cur_offer, "receive")
+        except Exception:
+            break
     if dp[N - 1] >= 0:
         ans += "PROFITABLY!"
     else:

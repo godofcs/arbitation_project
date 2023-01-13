@@ -1,43 +1,10 @@
 version: "3.7"
 
 services:
-  rabbitmq:
-    image: "rabbitmq:3.6-management-alpine"
-    container_name: rabbitmq
-    hostname: "rabbitmq-host"
-    environment:
-      RABBITMQ_DEFAULT_USER: "MonkeDLyugge"
-      RABBITMQ_DEFAULT_PASS: "TlVa474367636656565"
-    ports:
-      - 5672:5672
-      - 15672:15672
-    restart: always
-    networks:
-      - rabbit_net
   telegram:
     build: ./telegram
     container_name: telegram
     command: bash -c "python3.9 tele_bot/main.py"
-    depends_on:
-      - rabbitmq
-    ports:
-      - 8000:8000
-      - 8001:8001
-    networks:
-      - rabbit_net
-  counter:
-    build: ./src
-    container_name: counter
-    command: python3.9 main.py
-    depends_on:
-      - rabbitmq
-    ports:
-      - 8002:8002
-    networks:
-      - rabbit_net
 
-networks:
-    rabbit_net:
-        driver: bridge
 
 

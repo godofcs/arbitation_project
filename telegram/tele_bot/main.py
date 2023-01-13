@@ -1,14 +1,16 @@
-import pika
-import json
 import traceback, sys
 import telebot
 from telebot import types
+
+sys.path.append('..')
+
+from src.main import run
 
 API_KEY = "5630556319:AAHEgv_ykF1L5EADrJnzte6DTy9eyJg8nbE"
 
 ALL_MARKETS = ['Binance', 'ByBit', 'Huobi']
 ALL_CURRENCY = ['RUB', 'USD', 'EUR', 'CNY', 'GBP']
-ALL_BANKS = ['Raiffeisenbank', 'Sberbank', 'Tinkoff"']
+ALL_BANKS = ['Raiffeisenbank', 'Sberbank', 'Tinkoff']
 
 START_OVER_BUTTON = "НАЧАТЬ СНАЧАЛА"
 START_BUTTON = "НАЧАТЬ ТРЕЙДИТЬ"
@@ -38,6 +40,7 @@ def user_clear():
     user_bank = ALL_BANKS.copy()
     global user_stock_markets
     user_stock_markets = ALL_MARKETS.copy()
+
 
 @bot.message_handler(commands=['help'])
 def help(message):
@@ -88,6 +91,17 @@ def currency(message):
     buttons = list(map(lambda el: types.KeyboardButton(el),
                        [HELP_BUTTON, START_OVER_BUTTON] + ALL_CURRENCY))
     markup.add(*buttons)
+    if message.text.strip() == HELP_BUTTON:
+        help(message)
+        return
+    elif message.text.strip() != START_BUTTON:
+        bot.send_message(message.chat.id, INVALID_STRING)
+        start(message)
+        return
+    markup = types.ReplyKeyboardMarkup()
+    buttons = list(map(lambda el: types.KeyboardButton(el),
+                       [HELP_BUTTON, START_OVER_BUTTON] + ALL_CURRENCY))
+    markup.add(*buttons)
     mess = 'Выбери валюту для торговли'
     bot.send_message(message.chat.id, mess, reply_markup=markup)
     bot.register_next_step_handler(message, limit)
@@ -117,7 +131,7 @@ def limit(message):
     buttons = list(map(lambda el: types.KeyboardButton(el),
                        [HELP_BUTTON, START_OVER_BUTTON]))
     markup.add(*buttons)
-    mess = 'Введи свою ставку (1000 RUB минимум)' # TO DO Если будем делать для многих валют, то тут надо
+    mess = 'Введи свою ставку (1000 RUB минимум)'  # TO DO Если будем делать для многих валют, то тут надо
     # TO DO параметризовть лимит для разных валют
     bot.send_message(message.chat.id, mess, reply_markup=markup)
     bot.register_next_step_handler(message, stock_markets)
@@ -254,58 +268,19 @@ def pre_answer(message):
         help(message)
         return
     elif message.text.strip() == DONE:
-        credentials = pika.PlainCredentials(username="MonkeDLyugge", password="TlVa474367636656565")
-        connection_params = pika.ConnectionParameters(host="rabbitmq", credentials=credentials)#5672)
-        connection = pika.BlockingConnection(connection_params)
-        channel = connection.channel()
-
-        channel.queue_declare(queue="from_bot_to_parser", durable=True)
-        channel.basic_publish(exchange='',
-                              routing_key='from_bot_to_parser',
-                              body=json.dumps([message.chat.id,
-                                               user_currency,
-                                               user_limit,
-                                               user_bank,
-                                               user_stock_markets]),
-                              properties=pika.BasicProperties(
-                                  delivery_mode=2
-                              ))
         markup = types.ReplyKeyboardMarkup()
         buttons = [START_OVER_BUTTON, HELP_BUTTON]
         markup.add(*buttons)
         mess = 'Работаем...'
         bot.send_message(message.chat.id, mess, reply_markup=markup)
-        connection.close()
-        answer(message)
+        ans = run([message.chat.id, user_currency, user_limit, user_bank, user_stock_markets])
+        bot.send_message(message.chat.id, ans[1], reply_markup=markup)
+        bot.register_next_step_handler(message, start)
+        #start(message)
     else:
         bot.send_message(message.chat.id, INVALID_STRING)
         bank(message)
         return
-
-
-def answer(message):
-    credentials = pika.PlainCredentials(username="MonkeDLyugge", password="TlVa474367636656565")
-    connection_params = pika.ConnectionParameters(host="rabbitmq", credentials=credentials)  # 5672)
-    connection = pika.BlockingConnection(connection_params)
-    channel = connection.channel()
-
-    markup = types.ReplyKeyboardMarkup()
-    buttons = [START_OVER_BUTTON, HELP_BUTTON]
-    markup.add(*buttons)
-    def callback(ch, method, properties, body):
-        request = json.loads(body)
-        bot.send_message(request[0], request[1], reply_markup=markup)
-        bot.register_next_step_handler(message, start)
-
-    channel.basic_consume(callback, queue="from_parser_to_bot")
-
-    try:
-        channel.start_consuming()
-    except KeyboardInterrupt:
-        channel.stop_consuming()
-    except Exception:
-        channel.stop_consuming()
-        traceback.print_exc(file=sys.stdout)
 
 
 bot.polling(none_stop=True)

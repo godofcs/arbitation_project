@@ -10,7 +10,8 @@ import traceback, sys
 if __name__ == "__main__":
     db_session.global_init()
 
-    connection_parameters = pika.ConnectionParameters('localhost', 15672)
+    credentials = pika.PlainCredentials(username="MonkeDLyugge", password="TlVa474367636656565")
+    connection_parameters = pika.ConnectionParameters(host="rabbitmq", credentials=credentials)  # 15672)
     connection = pika.BlockingConnection(connection_parameters)
     channel = connection.channel()
     channel.queue_declare(queue="from_bot_to_parser", durable=True)

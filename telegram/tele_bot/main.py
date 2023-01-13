@@ -1,7 +1,8 @@
-import telebot
-from telebot import types
 import pika
 import json
+import traceback, sys
+import telebot
+from telebot import types
 
 API_KEY = "5630556319:AAHEgv_ykF1L5EADrJnzte6DTy9eyJg8nbE"
 
@@ -253,7 +254,8 @@ def pre_answer(message):
         help(message)
         return
     elif message.text.strip() == DONE:
-        connection_params = pika.ConnectionParameters('localhost', 5672)
+        credentials = pika.PlainCredentials(username="MonkeDLyugge", password="TlVa474367636656565")
+        connection_params = pika.ConnectionParameters(host="rabbitmq", credentials=credentials)#5672)
         connection = pika.BlockingConnection(connection_params)
         channel = connection.channel()
 
@@ -274,9 +276,36 @@ def pre_answer(message):
         mess = 'Работаем...'
         bot.send_message(message.chat.id, mess, reply_markup=markup)
         connection.close()
+        answer(message)
     else:
         bot.send_message(message.chat.id, INVALID_STRING)
         bank(message)
         return
+
+
+def answer(message):
+    credentials = pika.PlainCredentials(username="MonkeDLyugge", password="TlVa474367636656565")
+    connection_params = pika.ConnectionParameters(host="rabbitmq", credentials=credentials)  # 5672)
+    connection = pika.BlockingConnection(connection_params)
+    channel = connection.channel()
+
+    markup = types.ReplyKeyboardMarkup()
+    buttons = [START_OVER_BUTTON, HELP_BUTTON]
+    markup.add(*buttons)
+    def callback(ch, method, properties, body):
+        request = json.loads(body)
+        bot.send_message(request[0], request[1], reply_markup=markup)
+        bot.register_next_step_handler(message, start)
+
+    channel.basic_consume(callback, queue="from_parser_to_bot")
+
+    try:
+        channel.start_consuming()
+    except KeyboardInterrupt:
+        channel.stop_consuming()
+    except Exception:
+        channel.stop_consuming()
+        traceback.print_exc(file=sys.stdout)
+
 
 bot.polling(none_stop=True)

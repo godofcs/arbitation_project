@@ -1,5 +1,5 @@
-from src.db_requests import db_session
-from src.db_requests.offers import Offer
+from db_requests import db_session
+from db_requests.offers import Offer
 
 
 limits = {1: 1000, 2: 5000, 3: 10000, 4: 25000, 5: 50000, 6: 100000}

@@ -1,0 +1,8 @@
+pyvirtualdisplay==3.0
+selenium==4.6.1
+pyTelegramBotAPI==4.8.0
+sqlalchemy==1.4.42
+sqlalchemy_serializer==1.4.1
+telebot==0.0.4
+psycopg2==2.9.5
+pika==1.2.1

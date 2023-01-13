@@ -1,11 +1,40 @@
 version: "3"
 
 services:
-  web:
-    build: .
+  rabbitmq:
+    image: rabbitmq:3.11.0-management
+    container_name: rabbimq
+    hostname: line
+    environment:
+      - RABBITMQ_DEFAULT_USER=MonkeDLyugge
+      - RABBITMQ_DEFAULT_PASS=TlVa474367636656565
+    volumes:
+      - ./rabbitmq:/var/lib/rabbitmq
+    ports:
+      - 5672:5672
+      - 15672:15672
+    restart: always
+  tele_bot:
+    build: ./telegram/tele_bot
     container_name: tele_bot
-    command: python ./telegram/main.py
+    command: python tele_bot/main.py
     ports:
       - 8000:8000
     volumes:
-      - ./:/tele_bot
+      - ./telegram:/tele_bot
+  listener:
+    build: ./telegram/listener
+    container_name: listener
+    command: python listener/listener.py
+    ports:
+      - 8001:8001
+    volumes:
+      - ./telegram:/listener
+  counter:
+    build: ./src
+    container_name: counter
+    command: python main.py
+    ports:
+      - 8002:8002
+
+

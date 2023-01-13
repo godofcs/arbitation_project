@@ -1,9 +1,8 @@
 import json
 
-from src.parsers import parse_argument as pa
-from src import get_offers
-from src import counter
-from src.db_requests import db_session
+import get_offers
+import counter
+from db_requests import db_session
 
 import pika
 import traceback, sys
@@ -11,9 +10,7 @@ import traceback, sys
 if __name__ == "__main__":
     db_session.global_init()
 
-    # limit_id, fiat_mas, market_mas, crypto_mas, payment_mas = get_next_position_in_query()
-
-    connection_parameters = pika.ConnectionParameters('localhost', 5672)
+    connection_parameters = pika.ConnectionParameters('localhost', 15672)
     connection = pika.BlockingConnection(connection_parameters)
     channel = connection.channel()
     channel.queue_declare(queue="from_bot_to_parser", durable=True)

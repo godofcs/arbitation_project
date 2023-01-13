@@ -1,6 +1,3 @@
-from src.db_requests.offers import Offer
-
-
 def Counter(data: list):
     N = 71
     INF = 100000000

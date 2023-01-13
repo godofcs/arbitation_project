@@ -1,7 +1,6 @@
 import telebot
 from telebot import types
 import pika
-import traceback, sys
 import json
 
 API_KEY = "5630556319:AAHEgv_ykF1L5EADrJnzte6DTy9eyJg8nbE"

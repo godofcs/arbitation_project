@@ -6,6 +6,7 @@ from db_requests.db_session import SqlAlchemyBase
 
 class Offer(SqlAlchemyBase, SerializerMixin):  # Это класс, описывающий таблицу в бд
     __tablename__ = 'offers'
+    __table_args__ = {'extend_existing': True}
 
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
     market = sqlalchemy.Column(sqlalchemy.Text)

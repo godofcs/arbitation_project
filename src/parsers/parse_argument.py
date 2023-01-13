@@ -8,8 +8,6 @@ from time import sleep
 import logging
 
 
-# db_session.global_init("C:/Users/4739409/PycharmProjects/arbitation_project/bd/base.sqlite")
-
 all_crypto = {"USDT": {"binance": "USDT", "bybit": "USDT", "huobi": "usdt"},
               "BTC": {"binance": "BTC", "bybit": "BTC", "huobi": "btc"},
               "BUSD": {"binance": "BUSD", "bybit": "-", "huobi": "-"},
@@ -47,21 +45,22 @@ limits = {1: 1000, 2: 5000, 3: 10000, 4: 25000, 5: 50000, 6: 100000, 7: 500000}
 sell_buy = {"sell": 0, "buy": 1}
 
 
-def get_limit(limit_id):
+def get_limit(limit_id):  # Эта функция нужна для получения значения лимита по limit_id
     return limits[limit_id]
 
 
-def get_sell_buy(type):
+def get_sell_buy(type):  # Эта функция по типу действия: sell/buy возвращает его значение, как оно хранится в бд
     return sell_buy[type]
 
 
+# Эта функция генерирует массив ссылок, с которыми мы работаем
 def make_mas_links(cur_fiat, cur_market, cur_crypto, cur_payment):
     mas_links = []
     for sell_buy in mas_sell_buy:
         for payment in cur_payment:
             for fiat in cur_fiat:
                 for crypto in cur_crypto:
-                    for market in cur_market:  # Плохо, переделать
+                    for market in cur_market:
                         link = ""
                         flag = 0
                         for element in all_market[market][sell_buy]:
@@ -93,6 +92,7 @@ def make_mas_links(cur_fiat, cur_market, cur_crypto, cur_payment):
     return mas_links
 
 
+# Эта функция добавляет значение оффера в бд
 def add_to_database(new_offer, limit_id, taker_commission, maker_commission, sessions):
 #    sessions = db_session.create_session()
     offer = sessions.query(Offer).filter(Offer.market == new_offer[1],
@@ -115,6 +115,7 @@ def add_to_database(new_offer, limit_id, taker_commission, maker_commission, ses
     sessions.merge(offer)
 
 
+# Эта функция отвечает за запуск парсеров
 def parse_argument(limit_id, fiat_mas, market_mas, crypto_mas, payment_mas):
     logging.basicConfig(level=logging.DEBUG, filename="py_log.log", filemode="w",
                         format="%(asctime)s %(levelname)s %(message)s")

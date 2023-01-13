@@ -5,30 +5,30 @@ from time import sleep
 import logging
 
 
-def get_name(el):
+def get_name(el):  # Эта функция для получения имени мейкера
     name = el.find_element(By.CLASS_NAME, "advertiser-name")
     return name.text
 
 
-def get_col_orders(el):
+def get_col_orders(el):  # Эта функция для получения количества выполненных ордеров у мейкера
     col_el = el.find_element(By.CLASS_NAME, "advertiser-info")
     col = col_el.find_element(By.CSS_SELECTOR, "span")
     return int(col.text.split()[0])
 
 
-def get_complete_percent(el):
+def get_complete_percent(el):  # Эта функция для получения процента выполненных ордеров у мейкера
     percent = el.find_element(By.CLASS_NAME, "execute-rate")
     percent_str = percent.text
     return float(percent_str.split("%")[0])
 
 
-def get_price(el):
+def get_price(el):  # Эта функция для получения цены оффера мейкера
     price = el.find_element(By.CLASS_NAME, "price-amount")
     txt = price.text
     return float("".join(txt.split(",")))
 
 
-def get_limit(el):
+def get_limit(el):  # Эта функция для полученя лимитов, в которых торгует мейкер
     limit = el.find_elements(By.CLASS_NAME, "ql-value")
     mas_lim = []
     for el in limit[1].text.split("~"):
@@ -38,13 +38,13 @@ def get_limit(el):
     return mas_lim
 
 
-def get_available(el):
+def get_available(el):  # Эта функция для получения доступного количества крипты
     price = el.find_elements(By.CLASS_NAME, "ql-value")
     txt = price[0].text.split()[0]
     return float("".join(txt.split(",")))
 
 
-def get_glass_position(driver):
+def get_glass_position(driver):  # Эта функция для полученя всех позиций из стакана
     pos = []
     pos_element = driver.find_elements(By.XPATH, "//table/tbody/tr")
     kol = min(7, len(pos_element))
@@ -65,6 +65,7 @@ def get_glass_position(driver):
     return pos
 
 
+# Эта функция выполняет все необходимые действия на странице, чтобы дальше можно было работать с нужным стаканом
 def parse(link, limit):
     logging.basicConfig(level=logging.DEBUG, filename="py_log.log", filemode="w",
                         format="%(asctime)s %(levelname)s %(message)s")
@@ -142,9 +143,3 @@ def parse(link, limit):
     pos = get_glass_position(driver)
     driver.close()
     return pos
-
-
-#if __name__ == "__main__":
-#    print(parse("https://www.bybit.com/fiat/trade/otc/?actionType=0&token=BTC&fiat=RUB&paymentMethod=64", 10000))
-
-

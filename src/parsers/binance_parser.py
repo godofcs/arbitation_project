@@ -5,33 +5,33 @@ from time import sleep
 import logging
 
 
-def get_name(el):
+def get_name(el):  # Эта функция для получения имени мейкера
     name_el = el.find_element(By.CLASS_NAME, "css-1rhb69f")
     name = name_el.find_element(By.ID, "C2Cofferlistsell_link_merchant")
     return name.text
 
 
-def get_col_orders(el):
+def get_col_orders(el):  # Эта функция для получения количества выполненных ордеров у мейкера
     col_el = el.find_element(By.CLASS_NAME, "css-o358pi")
     col = col_el.find_element(By.CLASS_NAME, "css-1a0u4z7")
     return int(col.text.split()[0])
 
 
-def get_complete_percent(el):
+def get_complete_percent(el):  # Эта функция для получения процента выполненных ордеров у мейкера
     col_el = el.find_element(By.CLASS_NAME, "css-o358pi")
     col = col_el.find_element(By.CLASS_NAME, "css-19crpgd")
     col_str = col.text
     return float(col_str.split("%")[0])
 
 
-def get_price(el):
+def get_price(el):  # Эта функция для получения цены оффера мейкера
     price_el = el.find_element(By.CLASS_NAME, "css-11db165")
     price = price_el.find_element(By.CLASS_NAME, "css-1m1f8hn")
     txt = price.text
     return float("".join(txt.split(",")))
 
 
-def get_limit(el):
+def get_limit(el):  # Эта функция для полученя лимитов, в которых торгует мейкер
     limit_el = el.find_element(By.CLASS_NAME, "css-lalzkr")
     pochti_limit = limit_el.find_element(By.CLASS_NAME, "css-16w8hmr")
     limit = pochti_limit.find_elements(By.CLASS_NAME, "css-4cffwv")
@@ -43,7 +43,7 @@ def get_limit(el):
     return mas_lim
 
 
-def get_available(el):
+def get_available(el):  # Эта функция для получения доступного количества крипты
     price_el = el.find_element(By.CLASS_NAME, "css-lalzkr")
     pochti_price = price_el.find_element(By.CLASS_NAME, "css-3v2ep2")
     price = pochti_price.find_element(By.CLASS_NAME, "css-vurnku")
@@ -51,7 +51,7 @@ def get_available(el):
     return float("".join(txt.split(",")))
 
 
-def get_glass_position(driver):
+def get_glass_position(driver):  # Эта функция для полученя всех позиций из стакана
     pos = []
     element = driver.find_element(By.CLASS_NAME, "css-1mf6m87")
     pos_element = element.find_elements(By.CLASS_NAME, "css-ovjtyv")
@@ -73,6 +73,7 @@ def get_glass_position(driver):
     return pos
 
 
+# Эта функция выполняет все необходимые действия на странице, чтобы дальше можно было работать с нужным стаканом
 def parse(link, limit):
     logging.basicConfig(level=logging.DEBUG, filename="py_log.log", filemode="w",
                         format="%(asctime)s %(levelname)s %(message)s")
@@ -90,9 +91,9 @@ def parse(link, limit):
         try:
             input_place = driver.find_element(By.ID, "C2Csearchamount_searchbox_amount")
             button = driver.find_element(By.ID, "C2Csearchamount_btn_search")
-            #button2 = driver.find_element(By.CLASS_NAME, "css-1pcqseb")
+            # button2 = driver.find_element(By.CLASS_NAME, "css-1pcqseb")
             if input_place and button:  # and button2:
-                #button2.click()
+                # button2.click()
                 input_place.click()
                 input_place.send_keys(f"{limit}")
                 button.click()
@@ -116,7 +117,3 @@ def parse(link, limit):
     pos = get_glass_position(driver)
     driver.close()
     return pos
-
-
-#if __name__ == "__main__":
-#    print(parse("https://p2p.binance.com/ru/trade/sell/USDT?fiat=RUB&payment=TinkoffNew", 1000))

@@ -4,7 +4,7 @@ from sqlalchemy_serializer import SerializerMixin
 from db_requests.db_session import SqlAlchemyBase
 
 
-class Offer(SqlAlchemyBase, SerializerMixin):
+class Offer(SqlAlchemyBase, SerializerMixin):  # Это класс, описывающий таблицу в бд
     __tablename__ = 'offers'
 
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)

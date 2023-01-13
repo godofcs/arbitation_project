@@ -3,6 +3,10 @@ def Counter(data: list):
     INF = 100000000
 
     class LiteOffer:
+        """
+        Оффер, подобный классу Offer.py, являющийся сжатой его версией.
+        Нужен для того, чтобы нормально инициализировать офферы в нашем графе.
+        """
         def __init__(self, big_offer):
             self.receive_coin = big_offer.receive_coin
             self.init_coin = big_offer.init_coin

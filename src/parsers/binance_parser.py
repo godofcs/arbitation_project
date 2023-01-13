@@ -1,6 +1,8 @@
-from selenium.webdriver import Chrome, ChromeOptions
+from selenium.webdriver import Firefox
 from selenium.webdriver.common.by import By
+from selenium.webdriver.firefox.options import Options
 from time import sleep
+import logging
 
 
 def get_name(el):
@@ -12,7 +14,6 @@ def get_name(el):
 def get_col_orders(el):
     col_el = el.find_element(By.CLASS_NAME, "css-o358pi")
     col = col_el.find_element(By.CLASS_NAME, "css-1a0u4z7")
-    #print(col.text)
     return int(col.text.split()[0])
 
 
@@ -20,7 +21,6 @@ def get_complete_percent(el):
     col_el = el.find_element(By.CLASS_NAME, "css-o358pi")
     col = col_el.find_element(By.CLASS_NAME, "css-19crpgd")
     col_str = col.text
-    #print(col_str)
     return float(col_str.split("%")[0])
 
 
@@ -39,7 +39,6 @@ def get_limit(el):
     for el in limit:
         lim = el.text.split("\n")[1]
         lim = "".join(lim.split(","))
-        #print(lim)
         mas_lim.append(float(lim))
     return mas_lim
 
@@ -49,7 +48,6 @@ def get_available(el):
     pochti_price = price_el.find_element(By.CLASS_NAME, "css-3v2ep2")
     price = pochti_price.find_element(By.CLASS_NAME, "css-vurnku")
     txt = price.text.split()[0]
-    #print(txt)
     return float("".join(txt.split(",")))
 
 
@@ -69,19 +67,25 @@ def get_glass_position(driver):
                 "available": get_available(element)
             }
             pos.append(data)
-        except Exception:
-            #print(Exception)
-            pass
+            logging.debug("Append necessary position || binance")
+        except Exception as err:
+            logging.warning("Necessary position do not append in glass || binance")
     return pos
 
 
 def parse(link, limit):
-    options = ChromeOptions()
-    options.add_argument('headless')
-    driver = Chrome(executable_path="./chromedriver.exe", chrome_options=options)
+    logging.basicConfig(level=logging.DEBUG, filename="py_log.log", filemode="w",
+                        format="%(asctime)s %(levelname)s %(message)s")
+    path = "geckodriver.exe"
+    option = Options()
+    option.headless = True
+    logging.debug("Start browser || binance")
+    driver = Firefox(executable_path=path, options=option)
+    driver.set_window_size(1920, 1080)
     driver.get(link)
+    logging.debug("Successfully start browser || binance")
     kol = 0
-    while kol < 30:
+    while kol < 10:
         sleep(1)
         try:
             input_place = driver.find_element(By.ID, "C2Csearchamount_searchbox_amount")
@@ -92,24 +96,27 @@ def parse(link, limit):
                 input_place.click()
                 input_place.send_keys(f"{limit}")
                 button.click()
+                logging.debug("Send key || binance")
                 break
-        except Exception:
-            pass
+        except Exception as err:
+            logging.warning("Do not send key || binance")
         kol += 1
     kol = 0
-    while kol < 30:
+    while kol < 10:
         sleep(1)
         try:
             element = driver.find_element(By.CLASS_NAME, "css-1mf6m87")
             pos_element = element.find_elements(By.CLASS_NAME, "css-ovjtyv")
             if len(pos_element) > 1:
+                logging.debug("Get necessary position || binance")
                 break
-        except Exception:
-            pass
+        except Exception as err:
+            logging.warning("There is no necessary position || binance")
         kol += 1
     pos = get_glass_position(driver)
     driver.close()
     return pos
+
 
 #if __name__ == "__main__":
 #    print(parse("https://p2p.binance.com/ru/trade/sell/USDT?fiat=RUB&payment=TinkoffNew", 1000))

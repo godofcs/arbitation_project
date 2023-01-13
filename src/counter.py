@@ -51,7 +51,7 @@ def Counter(data: list):
         elif lite_offer.receive_coin in _crypto.keys():
             gr[PosByOffer(lite_offer, "receive")].append(lite_offer)
         else:
-            print(offer.id, "Invalid Offer")
+            print(lite_offer.init_coin, lite_offer.receive_coin, lite_offer.market, "<-INVALID COIN", offer.id)
     for i in range(1, len(_crypto) + 1):
         for j in range(2, len(_market) + 1):
             for k in range(1, j):

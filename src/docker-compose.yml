@@ -1,0 +1,12 @@
+version: "3.7"
+services:
+  parser:
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+        - 4000:4000
+    privileged: true
+    command:
+      python3.9 parser_launch.py

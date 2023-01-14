@@ -1,7 +1,6 @@
 from src.db_requests import db_session
 from src.db_requests.offers import Offer
 
-
 limits = {1: 1000, 2: 5000, 3: 10000, 4: 25000, 5: 50000, 6: 100000}
 rev_limits = {1000: 1, 5000: 2, 10000: 3, 25000: 4, 50000: 5, 100000: 6}
 
@@ -32,11 +31,10 @@ def get_offers(cur_fiat: list, cur_cripto: list, cur_limit_id: list, cur_market:
         ans_for_one_limit_id = [limits[it_limit_id]]
         for it_crypto in cur_cripto:
             ans = []
-            print(limits[it_limit_id])
             for it_payment in cur_payment:
                 for it_market in cur_market:
                     for it_fiat in cur_fiat:
-                        #print(it_limit_id, it_crypto, it_payment, it_market, it_fiat)
+                        # print(it_limit_id, it_crypto, it_payment, it_market, it_fiat)
                         # TODO проверить, что с .lower(), всё работает
                         offers = sessions.query(Offer).filter(Offer.market == it_market.lower(),
                                                               Offer.init_coin == it_fiat,

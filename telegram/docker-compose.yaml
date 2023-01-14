@@ -1,0 +1,39 @@
+version: '3.7'
+
+services:
+
+  rabbitmq:
+    image: 'rabbitmq:latest'
+
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+    environment:
+      RABBITMQ_DEFAULT_USER: "guest"
+      RABBITMQ_DEFAULT_PASS: "guest"
+    networks:
+      - network
+
+  telebot:
+    depends_on:
+      - rabbitmq
+    build: tele_bot/
+    environment:
+      AMQP_URL: 'amqp://rabbitmq?connection_attempts=5&retry_delay=5'
+    command: python3.9 main.py
+    networks:
+      - network
+
+  server:
+    depends_on:
+      - rabbitmq
+    build: src/
+    environment:
+      AMQP_URL: 'amqp://rabbitmq?connection_attempts=5&retry_delay=5'
+    command: python3.9 src/main.py
+    networks:
+      - network
+
+networks:
+  network:
+    driver: bridge

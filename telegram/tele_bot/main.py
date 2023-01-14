@@ -1,10 +1,8 @@
-import traceback, sys
+import uuid
+import pika
 import telebot
+import json
 from telebot import types
-
-sys.path.append('..')
-
-from src.main import run
 
 API_KEY = "5630556319:AAHEgv_ykF1L5EADrJnzte6DTy9eyJg8nbE"
 
@@ -29,6 +27,37 @@ user_stock_markets = ALL_MARKETS.copy()
 user_limit = 0
 
 bot = telebot.TeleBot(API_KEY)
+
+
+class RpcClient:
+    def __init__(self):
+        # TODO проверить правильное название host
+        self.connection = pika.BlockingConnection(pika.URLParameters("amqp://guest:guest@rabbitmq:5672/%2F"))
+        self.channel = self.connection.channel()
+        result = self.channel.queue_declare(queue='', exclusive=True)
+
+        self.callback_queue = result.method.queue
+
+        self.channel.basic_consume(queue=self.callback_queue, on_message_callback=self.on_response, auto_ack=True)
+
+        self.response = None
+        self.corr_id = None
+
+    def on_response(self, ch, method, props, body):
+        if self.corr_id == props.correlation_id:
+            self.response = body
+
+    def call(self, user_currency, user_limit, user_bank, user_stock_markets):
+        self.response = None
+        self.corr_id = str(uuid.uuid4())
+        self.channel.basic_publish(exchange='', routing_key="rpc_queue",
+                                   properties=pika.BasicProperties(reply_to=self.callback_queue,
+                                                                   correlation_id=self.corr_id),
+                                   body=json.dumps({"user_currency": user_currency, "user_limit": user_limit,
+                                                    "user_bank": user_bank,
+                                                    "user_stock_markets": user_stock_markets}).encode("utf-8"))
+        self.connection.process_data_events(time_limit=None)
+        return self.response
 
 
 def user_clear():
@@ -273,14 +302,19 @@ def pre_answer(message):
         markup.add(*buttons)
         mess = 'Работаем...'
         bot.send_message(message.chat.id, mess, reply_markup=markup)
-        ans = run([message.chat.id, user_currency, user_limit, user_bank, user_stock_markets])
-        bot.send_message(message.chat.id, ans[1], reply_markup=markup)
+        response = send_message_to_rpc_queue(user_currency, user_limit, user_bank, user_stock_markets)
+        bot.send_message(message.chat.id, response, reply_markup=markup)
         bot.register_next_step_handler(message, start)
-        #start(message)
     else:
         bot.send_message(message.chat.id, INVALID_STRING)
         bank(message)
         return
+
+
+def send_message_to_rpc_queue(user_currency, user_limit, user_bank, user_stock_markets):
+    client = RpcClient()
+    response = client.call(user_currency, user_limit, user_bank, user_stock_markets)
+    return response
 
 
 bot.polling(none_stop=True)

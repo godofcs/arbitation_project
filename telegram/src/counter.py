@@ -2,8 +2,6 @@ def Counter(data: list):
     N = 71
     INF = 100000000
 
-    print(2222222222222222222222222)
-
     class LiteOffer:
         def __init__(self, big_offer):
             self.receive_coin = big_offer.receive_coin
@@ -35,8 +33,6 @@ def Counter(data: list):
             return 1.0
         else:
             return 0
-
-    print(3333333333333333333333)
 
     """
     Поиск релазиован с помощью алгоритма поиска наибольшего пути
@@ -96,7 +92,6 @@ def Counter(data: list):
     dfs(0, -1)
     ans = str()
     pos = N - 1
-    print("Go to message")
     for i in range(3):
         try:
             cur_offer = prev[pos]

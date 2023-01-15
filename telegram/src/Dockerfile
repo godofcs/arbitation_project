@@ -4,4 +4,4 @@ ENV PYTHONUNBUFFERED=1
 
 COPY . /src
 RUN pip install --upgrade pip
-RUN pip install -r src/requirements.txt
+RUN pip install -r telegram/src/requirements.txt

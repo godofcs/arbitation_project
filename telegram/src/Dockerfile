@@ -4,5 +4,5 @@ ENV PYTHONUNBUFFERED=1
 
 COPY . /src
 RUN pip install --upgrade pip
-RUN ls -l
+RUN find -name requirements.txt
 RUN pip install -r requirements.txt

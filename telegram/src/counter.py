@@ -20,7 +20,7 @@ def Counter(data: list):
     _deM = {1: "binance", 2: "bybit", 3: "huobi"}
 
     class Coin:
-        def __init__(self, type, name):
+        def __init__(self, type, name : str):
             self.type_of_coin = type
             self.name = name
 
@@ -31,8 +31,8 @@ def Counter(data: list):
         """
 
         def __init__(self, big_offer):
-            self.receive_coin = Coin("receive", big_offer.receive_coin)
-            self.init_coin = Coin("init", big_offer.receive_coin)
+            self.receive_coin = str(big_offer.receive_coin)
+            self.init_coin = str(big_offer.init_coin)
             self.market = big_offer.market
             self.payment = big_offer.payment
             self.sell_buy = big_offer.sell_buy
@@ -41,7 +41,7 @@ def Counter(data: list):
             self.taker_commission = big_offer.taker_commission
 
         def PosByOffer(self, type_of_offer):
-            offer_name = self.receive_coin.name if type_of_offer == "receive" else self.init_coin.name
+            offer_name = str(self.receive_coin) if type_of_offer == "receive" else str(self.init_coin)
             if offer_name.upper() in _fiat:
                 return N - 1 if type_of_offer == "init" else 0
             return _crypto[offer_name] * 10 + _market[self.market]
@@ -62,18 +62,18 @@ def Counter(data: list):
     for offer in data:
         edge_offer = LiteOffer(offer)
         pos_to = edge_offer.PosByOffer("receive")
-        if edge_offer.receive_coin.name.upper() in _fiat:
+        if edge_offer.receive_coin.upper() in _fiat:
             gr[0].append(edge_offer) if edge_offer.sell_buy else gr[pos_to].append(edge_offer)
-        elif edge_offer.receive_coin.name in _crypto.keys():
+        elif edge_offer.receive_coin in _crypto.keys():
             gr[pos_to].append(edge_offer) if edge_offer.sell_buy else gr[0].append(edge_offer)
         else:
-            print(edge_offer.init_coin.name, edge_offer.receive_coin.name, edge_offer.market, "<-INVALID COIN",
+            print(edge_offer.init_coin, edge_offer.receive_coin, edge_offer.market, "<-INVALID COIN",
                   offer.id)
     for i in range(1, len(_crypto) + 1):
         for j in range(2, len(_market) + 1):
             for k in range(1, j):
                 modificate_offer = LiteOffer(data[0])
-                modificate_offer.init_coin.name, modificate_offer.receive_coin.name, modificate_offer.price, modificate_offer.market = \
+                modificate_offer.init_coin, modificate_offer.receive_coin, modificate_offer.price, modificate_offer.market = \
                     _deC[i], _deC[i], Commission(_deC[i]), _deM[k]
                 offer_between_markets_1 = LiteOffer(modificate_offer)
                 gr[i * 10 + j].append(offer_between_markets_1)
@@ -89,19 +89,21 @@ def Counter(data: list):
         for u in gr[v]:
             pos = u.PosByOffer("init")
             cur_commission = (min(u.taker_commission, u.maker_commission)) / 100
-            if u.receive_coin.name in _crypto.keys():
-                if dp[pos] == -INF:
+            if u.receive_coin in _crypto.keys():
+                if dp[pos] == -INF or dp[v] + u.price < dp[pos]:
                     dp[pos] = dp[v] + u.price - u.price * cur_commission
-                    prev[pos] = u
-                elif dp[v] + u.price < dp[pos]:
-                    dp[pos] = dp[v] + u.price - u.price * cur_commission
-                    prev[pos] = u
-                    if p // 10 == v // 10:
-                        prev[pos].market = _deM[p % 10]
+                    prev[pos] = LiteOffer(u)
+                    # if pos == N-1:
+                    #     print(u.receive_coin, u.init_coin, "in dfs")
+                    if pos // 10 == v // 10:
+                        print("im here")
+                        prev[pos].market = _deM[v % 10] + ","+_deM[pos%10]
             else:
                 if u.price - dp[v] > dp[pos]:
                     dp[pos] = u.price - dp[v] - u.price * cur_commission
-                    prev[pos] = u
+                    prev[pos] = LiteOffer(u)
+                    # if pos == N-1:
+                    #     print(u.receive_coin, u.init_coin, "in dfs")
 
             if p // 10 != v // 10 or v // 10 != pos // 10:
                 dfs(pos, v)
@@ -110,16 +112,18 @@ def Counter(data: list):
     ans = str()
     pos = N - 1
     step = 0
+    print("____________")
     while pos != 0 and step < 4:
         step += 1
         cur_offer = prev[pos]
-        if cur_offer.init_coin.name != cur_offer.receive_coin.name:
+        if cur_offer.init_coin != cur_offer.receive_coin:
             ans += "Buy " if cur_offer.sell_buy else "Sell "
             ans += "Taker " if cur_offer.maker_commission > cur_offer.taker_commission else "Maker "
-            ans += cur_offer.market + " " + cur_offer.init_coin.name + " " + cur_offer.receive_coin.name + " "
+            ans += cur_offer.market + " " + cur_offer.init_coin + " " + cur_offer.receive_coin + " "
             ans += cur_offer.payment + " -> "
         else:
-            ans += cur_offer.init_coin.name + " Transfer to next market -> "
+            print(cur_offer.init_coin, cur_offer.receive_coin, cur_offer.market, pos)
+            ans += cur_offer.init_coin + " Transfer to next market -> "
         pos = cur_offer.PosByOffer("receive")
     if dp[N - 1] >= 0:
         ans += "PROFITABLY!"

@@ -41,10 +41,10 @@ def Counter(data: list):
             self.taker_commission = big_offer.taker_commission
 
         def PosByOffer(self, type_of_offer):
-            offer_name = offer.receive_coin.name if type_of_offer == "receive" else offer.init_coin.name
+            offer_name = self.receive_coin.name if type_of_offer == "receive" else self.init_coin.name
             if offer_name.upper() in _fiat:
                 return N - 1 if type_of_offer == "init" else 0
-            return _crypto[offer_name] * 10 + _market[offer.market]
+            return _crypto[offer_name] * 10 + _market[self.market]
 
     def Commission(offer_name):
         # комса указана в рублях
